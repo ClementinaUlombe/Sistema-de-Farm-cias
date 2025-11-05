@@ -1,0 +1,92 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+// Enum para os perfis de utilizador
+enum UserRole {
+  ADMIN
+  ATTENDANT
+  STOCKIST
+}
+
+// Modelo para Utilizadores
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  name      String
+  password  String
+  role      UserRole @default(ATTENDANT)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  sales           Sale[]
+  stockMovements  StockMovement[]
+}
+
+// Modelo para Produtos
+model Product {
+  id                String   @id @default(cuid())
+  name              String
+  category          String
+  dosage            String?
+  manufacturer      String?
+  purchasePrice     Float
+  sellingPrice      Float
+  entryDate         DateTime @default(now())
+  expiryDate        DateTime
+  stockQuantity     Int
+  minStockQuantity  Int
+  barcode           String?  @unique
+
+  saleItems       SaleItem[]
+  stockMovements  StockMovement[]
+}
+
+// Modelo para Vendas
+model Sale {
+  id            String   @id @default(cuid())
+  createdAt     DateTime @default(now())
+  total         Float
+  discount      Float    @default(0)
+  paymentMethod String // "dinheiro", "pos", "transferencia"
+  
+  attendantId   String
+  attendant     User     @relation(fields: [attendantId], references: [id])
+  
+  items         SaleItem[]
+}
+
+// Modelo para os itens de uma venda (tabela de junção)
+model SaleItem {
+  id        String  @id @default(cuid())
+  quantity  Int
+  priceAtSale Float // Preço do produto no momento da venda
+
+  saleId    String
+  sale      Sale    @relation(fields: [saleId], references: [id])
+
+  productId String
+  product   Product @relation(fields: [productId], references: [id])
+}
+
+// Modelo para o histórico de movimentação de stock
+model StockMovement {
+  id              String    @id @default(cuid())
+  createdAt       DateTime  @default(now())
+  quantityChange  Int       // Positivo para entradas, negativo para saídas
+  reason          String    // "venda", "compra", "ajuste manual", "expirado"
+
+  productId       String
+  product         Product   @relation(fields: [productId], references: [id])
+
+  userId          String
+  user            User      @relation(fields: [userId], references: [id])
+}
