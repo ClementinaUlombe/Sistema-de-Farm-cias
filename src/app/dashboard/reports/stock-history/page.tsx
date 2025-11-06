@@ -37,6 +37,11 @@ export default function StockHistoryPage() {
       .then(data => setProducts(data));
   }, []);
 
+  // Generate report on initial load
+  useEffect(() => {
+    generateReport();
+  }, []);
+
   const handleFilterChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFilters(prev => ({ ...prev, [e.target.name]: e.target.value }));
   };

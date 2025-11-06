@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useSession } from 'next-auth/react';
 import { 
   Container, Box, Typography, CircularProgress, Alert, Grid, Paper, TextField, Button,
@@ -20,6 +20,11 @@ export default function MyReportPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [dates, setDates] = useState({ from: '', to: '' });
+
+  // Generate report on initial load
+  useEffect(() => {
+    generateReport();
+  }, []);
 
   const handleDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setDates(prev => ({ ...prev, [e.target.name]: e.target.value }));
