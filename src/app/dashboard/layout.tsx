@@ -169,10 +169,12 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                         <ListItemText primary="Recuperar Contas" sx={{ color: 'white' }} />
                       </ListItemButton>
                     </Link>
-                    <ListItemButton sx={{ pl: 4, mb: 1, bgcolor: '#69F0AE', '&:hover': { bgcolor: '#00E676' } }} disabled>
-                      <ListItemIcon sx={{ color: 'white' }}><ListAltIcon /></ListItemIcon>
-                      <ListItemText primary="Logs de Atividades" sx={{ color: 'white' }} />
-                    </ListItemButton>
+                    <Link href="/dashboard/auditoria/logs" passHref>
+                      <ListItemButton sx={{ pl: 4, mb: 1, bgcolor: '#69F0AE', '&:hover': { bgcolor: '#00E676' } }}>
+                        <ListItemIcon sx={{ color: 'white' }}><ListAltIcon /></ListItemIcon>
+                        <ListItemText primary="Logs de Atividades" sx={{ color: 'white' }} />
+                      </ListItemButton>
+                    </Link>
                     <ListItemButton sx={{ pl: 4, mb: 1, bgcolor: '#69F0AE', '&:hover': { bgcolor: '#00E676' } }} disabled>
                       <ListItemIcon sx={{ color: 'white' }}><BackupIcon /></ListItemIcon>
                       <ListItemText primary="Backup da Base de Dados" sx={{ color: 'white' }} />

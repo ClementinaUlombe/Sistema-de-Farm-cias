@@ -91,3 +91,14 @@ model StockMovement {
   userId          String
   user            User      @relation(fields: [userId], references: [id])
 }
+
+// Modelo para Logs de Auditoria
+model Log {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  actorId   String   // ID do utilizador que realizou a ação
+  actorName String   // Nome do utilizador (denormalizado para facilitar a consulta)
+  action    String   // Ex: USER_CREATED, PRODUCT_UPDATED, USER_LOGIN
+  targetId  String   // ID da entidade afetada (ex: ID do produto, ID do utilizador)
+  details   Json?    // Detalhes adicionais sobre o evento (ex: campos alterados)
+}

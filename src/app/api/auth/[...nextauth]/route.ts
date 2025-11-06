@@ -67,6 +67,39 @@ export const authOptions: AuthOptions = {
     signIn: '/login',
     signOut: '/login',
     error: '/login',
+  },
+  events: {
+    async signIn(message) {
+      if (message.isNewUser) {
+        await prisma.log.create({
+          data: {
+            actorId: message.user.id!,
+            actorName: message.user.name!,
+            action: 'USER_CREATED',
+            targetId: message.user.id!,
+          }
+        });
+      } else {
+        await prisma.log.create({
+          data: {
+            actorId: message.user.id!,
+            actorName: message.user.name!,
+            action: 'USER_LOGIN',
+            targetId: message.user.id!,
+          }
+        });
+      }
+    },
+    async signOut(message) {
+      await prisma.log.create({
+        data: {
+          actorId: message.token.sub!,
+          actorName: message.token.name!,
+          action: 'USER_LOGOUT',
+          targetId: message.token.sub!,
+        }
+      });
+    }
   }
 };
 

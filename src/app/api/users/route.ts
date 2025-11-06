@@ -68,8 +68,18 @@ export async function POST(req: Request) {
       },
     });
 
-    // Return user without password
     const { password: _, ...userToReturn } = newUser;
+
+    // Log the action
+    await prisma.log.create({
+      data: {
+        actorId: session.user.id,
+        actorName: session.user.name!,
+        action: 'USER_CREATED',
+        targetId: newUser.id,
+        details: { name, email, role },
+      }
+    });
 
     return new NextResponse(JSON.stringify(userToReturn), { status: 201 });
   } catch (error) {

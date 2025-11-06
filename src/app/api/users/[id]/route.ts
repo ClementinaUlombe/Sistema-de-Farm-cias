@@ -74,6 +74,18 @@ export async function PUT(req: Request, { params }: RouteParams) {
       data: dataToUpdate,
     });
 
+    // Log the action
+    const action = isActive === true && existingUser.isActive === false ? 'USER_REACTIVATED' : 'USER_UPDATED';
+    await prisma.log.create({
+      data: {
+        actorId: session.user.id,
+        actorName: session.user.name!,
+        action: action,
+        targetId: updatedUser.id,
+        details: { dataToUpdate },
+      }
+    });
+
     const { password: _, ...userToReturn } = updatedUser;
     return NextResponse.json(userToReturn);
 
@@ -83,43 +95,39 @@ export async function PUT(req: Request, { params }: RouteParams) {
   }
 }
 
-// DELETE: Delete a user
-// DELETE: Delete a user
+// DELETE: Deactivate a user
 export async function DELETE(req: Request, { params }: RouteParams) {
   const session = await getServerSession(authOptions);
   const { id } = params;
 
-  if (!session) {
-    return new NextResponse(JSON.stringify({ error: 'Sessão não encontrada' }), { status: 401 });
-  }
-
-  if (session.user.role !== UserRole.ADMIN) {
+  if (session?.user?.role !== UserRole.ADMIN) {
     return new NextResponse(JSON.stringify({ error: 'Acesso não autorizado' }), { status: 403 });
   }
 
-  // Impede o admin de apagar a própria conta
+  // Prevent admin from deleting themselves
   if (session.user.id === id) {
     return new NextResponse(JSON.stringify({ error: 'Não pode apagar a sua própria conta.' }), { status: 403 });
   }
 
   try {
-    const userExists = await prisma.user.findUnique({ where: { id } });
-
-    if (!userExists) {
-      return new NextResponse(JSON.stringify({ error: 'Utilizador não encontrado' }), { status: 404 });
-    }
-
-    // Aqui "apagar" apenas desativa o utilizador
-    const deletedUser = await prisma.user.update({
+    const userToDeactivate = await prisma.user.update({
       where: { id },
       data: { isActive: false },
     });
 
-    return NextResponse.json({
-      message: `Utilizador ${deletedUser.name} desativado com sucesso.`,
+    // Log the action
+    await prisma.log.create({
+      data: {
+        actorId: session.user.id,
+        actorName: session.user.name!,
+        action: 'USER_DEACTIVATED',
+        targetId: userToDeactivate.id,
+      }
     });
+
+    return new NextResponse(null, { status: 204 }); // No Content
   } catch (error) {
-    console.error('Erro ao apagar utilizador:', error);
+    console.error(error);
     return new NextResponse(JSON.stringify({ error: 'Erro ao apagar utilizador' }), { status: 500 });
   }
 }
