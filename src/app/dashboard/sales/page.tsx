@@ -6,7 +6,7 @@ import { useRouter } from 'next/navigation';
 import { 
   Container, Box, Typography, Button, CircularProgress, Alert, Grid, Paper, TextField, Autocomplete,
   List, ListItem, ListItemText, IconButton, Divider, Select, MenuItem, FormControl, InputLabel, Snackbar,
-  Dialog, DialogTitle, DialogContent, DialogActions, Table, TableBody, TableCell, TableRow, TableHead
+  Dialog, DialogTitle, DialogContent, DialogActions, Table, TableBody, TableCell, TableRow, TableHead, TableContainer
 } from '@mui/material';
 import { AddCircleOutline, RemoveCircleOutline, Delete, Print } from '@mui/icons-material';
 import { UserRole } from '@prisma/client';
@@ -96,7 +96,7 @@ export default function SalesPage() {
           {/* Left Side: Search and Cart */}
           <Grid item xs={12} md={7}>
             <Paper sx={{ p: 2 }}>
-              <Autocomplete options={products.filter(p => p.stockQuantity > 0)} getOptionLabel={(o) => `${o.name} (Stock: ${o.stockQuantity})`} onChange={(e, val) => val && addToCart(val)} renderInput={(params) => <TextField {...params} label="Pesquisar Produto" />} />
+              <Autocomplete options={Array.isArray(products) ? products.filter(p => p.stockQuantity > 0) : []} getOptionLabel={(o) => `${o.name} (Stock: ${o.stockQuantity})`} onChange={(e, val) => val && addToCart(val)} renderInput={(params) => <TextField {...params} label="Pesquisar Produto" />} />
               <List sx={{ mt: 2 }}>
                 {cart.map(item => (
                   <ListItem key={item.id} divider>
