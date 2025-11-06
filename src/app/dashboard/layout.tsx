@@ -18,6 +18,7 @@ import RestoreIcon from '@mui/icons-material/Restore';
 import ListAltIcon from '@mui/icons-material/ListAlt';
 import BackupIcon from '@mui/icons-material/Backup';
 import { UserRole } from '@prisma/client';
+import ThemeSwitcher from '../components/ThemeSwitcher';
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   const { data: session, status } = useSession();
@@ -198,7 +199,10 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         </Box>
 
         {/* Main Content */}
-        <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
+        <Box component="main" sx={{ flexGrow: 1, p: 3, position: 'relative' }}>
+          <Box sx={{ position: 'absolute', top: 16, right: 24 }}>
+            <ThemeSwitcher />
+          </Box>
           {children}
         </Box>
       </Box>
