@@ -3,11 +3,12 @@
 import { useState, useEffect, useMemo } from 'react';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
-import { 
-  Container, Box, Typography, Button, CircularProgress, Alert, Grid, Paper, TextField, Autocomplete,
-  List, ListItem, ListItemText, IconButton, Divider, Select, MenuItem, FormControl, InputLabel, Snackbar,
+import {
+  Container, Box, Typography, Button, CircularProgress, Grid, Paper, TextField, Autocomplete,
+  List, ListItem, ListItemText, IconButton, Divider, Select, MenuItem, FormControl, InputLabel,
   Dialog, DialogTitle, DialogContent, DialogActions, Table, TableBody, TableCell, TableRow, TableHead, TableContainer
 } from '@mui/material';
+import FeedbackModal from '../../components/FeedbackModal';
 import { AddCircleOutline, RemoveCircleOutline, Delete, Print } from '@mui/icons-material';
 import { UserRole } from '@prisma/client';
 
@@ -21,11 +22,13 @@ export default function SalesPage() {
   const router = useRouter();
 
   // Page State
-  
+
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
-  const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: 'success' as 'success' | 'error' });
+  const [feedbackModalState, setFeedbackModalState] = useState({ open: false, message: '', severity: 'success' as 'success' | 'error' });
+  const [accessDeniedModalOpen, setAccessDeniedModalOpen] = useState(false);
+
 
   // Sale State
   const [cart, setCart] = useState<CartItem[]>([]);
@@ -41,6 +44,7 @@ export default function SalesPage() {
     if (status === 'authenticated' && session.user?.role) {
       if (![UserRole.ADMIN, UserRole.ATTENDANT].includes(session.user.role as UserRole)) {
         setLoading(false);
+        setAccessDeniedModalOpen(true);
         return;
       }
       fetch('/api/products').then(res => res.json()).then(setProducts).finally(() => setLoading(false));
@@ -56,6 +60,8 @@ export default function SalesPage() {
     setPaymentMethod('dinheiro');
     setLastSale(null);
     setReceiptOpen(false);
+    setAccessDeniedModalOpen(false);
+    setFeedbackModalState({ open: false, message: '', severity: 'success' }); // Reset feedback modal
   };
 
   const addToCart = (product: Product) => {
@@ -77,16 +83,30 @@ export default function SalesPage() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ cart, discount, paymentMethod }),
       });
-      if (!res.ok) throw new Error((await res.json()).error || 'Falha ao finalizar a venda');
+      if (!res.ok) {
+        const errorData = await res.json();
+        throw new Error(errorData.error || 'Falha ao finalizar a venda');
+      }
       const saleData = await res.json();
       setLastSale(saleData);
       setReceiptOpen(true);
-    } catch (err: any) { setSnackbar({ open: true, message: err.message, severity: 'error' }); }
-    finally { setSubmitting(false); }
+      setFeedbackModalState({ open: true, message: 'Venda finalizada com sucesso!', severity: 'success' });
+    } catch (err: any) {
+      setFeedbackModalState({ open: true, message: err.message, severity: 'error' });
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   if (loading || status === 'loading') return <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}><CircularProgress /></Box>;
-  if (![UserRole.ADMIN, UserRole.ATTENDANT].includes(session?.user?.role as UserRole)) return <Container><Alert severity="error" sx={{ mt: 4 }}>Acesso Negado.</Alert></Container>;
+  if (![UserRole.ADMIN, UserRole.ATTENDANT].includes(session?.user?.role as UserRole)) return (
+    <FeedbackModal
+      open={accessDeniedModalOpen}
+      message="Acesso Negado. Você não tem permissão para acessar esta página."
+      severity="error"
+      onClose={() => router.push('/dashboard')}
+    />
+  );
 
   return (
     <>
@@ -194,9 +214,12 @@ export default function SalesPage() {
         }
       `}</style>
 
-      <Snackbar open={snackbar.open} autoHideDuration={6000} onClose={() => setSnackbar(prev => ({...prev, open: false}))} anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}>
-        <Alert onClose={() => setSnackbar(prev => ({...prev, open: false}))} severity={snackbar.severity} sx={{ width: '100%' }}>{snackbar.message}</Alert>
-      </Snackbar>
+      <FeedbackModal
+        open={feedbackModalState.open}
+        message={feedbackModalState.message}
+        severity={feedbackModalState.severity}
+        onClose={() => setFeedbackModalState({ ...feedbackModalState, open: false })}
+      />
     </>
   );
 }

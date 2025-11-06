@@ -4,11 +4,12 @@ import { useState, useEffect, useCallback } from 'react';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import { 
-  Container, Box, Typography, Button, CircularProgress, Alert, 
+  Container, Box, Typography, Button, CircularProgress, 
   Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, 
-  Dialog, DialogActions, DialogContent, DialogTitle, TextField, Grid, Snackbar,
+  Dialog, DialogActions, DialogContent, DialogTitle, TextField, Grid,
   IconButton, Tooltip, Select, MenuItem, InputLabel, FormControl
 } from '@mui/material';
+import FeedbackModal from '../../components/FeedbackModal';
 import { Edit as EditIcon, Delete as DeleteIcon } from '@mui/icons-material';
 import { UserRole } from '@prisma/client';
 
@@ -39,14 +40,14 @@ export default function UsersPage() {
   const [editingUser, setEditingUser] = useState<User | null>(null);
 
   const [deleteConfirm, setDeleteConfirm] = useState({ open: false, userId: '' });
-  const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: 'success' as 'success' | 'error' });
+  const [feedbackModalState, setFeedbackModalState] = useState({ open: false, message: '', severity: 'success' as 'success' | 'error' });
 
   const fetchUsers = useCallback(async () => {
     try {
       const res = await fetch('/api/users');
       if (!res.ok) throw new Error((await res.json()).error || 'Falha ao carregar utilizadores');
       setUsers(await res.json());
-    } catch (err: any) { setError(err.message); }
+    } catch (err: any) { setFeedbackModalState({ open: true, message: err.message, severity: 'error' }); }
   }, []);
 
   useEffect(() => {
@@ -93,9 +94,9 @@ export default function UsersPage() {
       });
       if (!res.ok) throw new Error((await res.json()).error || 'Falha ao salvar utilizador');
       await fetchUsers();
-      setSnackbar({ open: true, message: `Utilizador ${editingUser ? 'atualizado' : 'criado'} com sucesso!`, severity: 'success' });
+      setFeedbackModalState({ open: true, message: `Utilizador ${editingUser ? 'atualizado' : 'criado'} com sucesso!`, severity: 'success' });
       handleCloseModal();
-    } catch (err: any) { setSnackbar({ open: true, message: err.message, severity: 'error' }); }
+    } catch (err: any) { setFeedbackModalState({ open: true, message: err.message, severity: 'error' }); }
   };
 
   const handleDeleteClick = (userId: string) => setDeleteConfirm({ open: true, userId });
@@ -105,13 +106,20 @@ export default function UsersPage() {
       const res = await fetch(`/api/users/${deleteConfirm.userId}`, { method: 'DELETE' });
       if (!res.ok) throw new Error((await res.json()).error || 'Falha ao apagar utilizador');
       await fetchUsers();
-      setSnackbar({ open: true, message: 'Utilizador apagado com sucesso!', severity: 'success' });
+      setFeedbackModalState({ open: true, message: 'Utilizador apagado com sucesso!', severity: 'success' });
       handleDeleteCancel();
-    } catch (err: any) { setSnackbar({ open: true, message: err.message, severity: 'error' }); }
+    } catch (err: any) { setFeedbackModalState({ open: true, message: err.message, severity: 'error' }); }
   };
 
   if (loading || status === 'loading') return <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}><CircularProgress /></Box>;
-  if (session?.user?.role !== UserRole.ADMIN) return <Container><Alert severity="error" sx={{ mt: 4 }}>Acesso Negado. Apenas Administradores podem ver esta página.</Alert></Container>;
+  if (session?.user?.role !== UserRole.ADMIN) return (
+    <FeedbackModal
+      open={true}
+      message="Acesso Negado. Apenas Administradores podem ver esta página."
+      severity="error"
+      onClose={() => router.push('/dashboard')}
+    />
+  );
 
   return (
     <Container component="main" maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
@@ -175,9 +183,12 @@ export default function UsersPage() {
         </DialogActions>
       </Dialog>
 
-      <Snackbar open={snackbar.open} autoHideDuration={6000} onClose={() => setSnackbar(prev => ({...prev, open: false}))} anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}>
-        <Alert onClose={() => setSnackbar(prev => ({...prev, open: false}))} severity={snackbar.severity} sx={{ width: '100%' }}>{snackbar.message}</Alert>
-      </Snackbar>
+      <FeedbackModal
+        open={feedbackModalState.open}
+        message={feedbackModalState.message}
+        severity={feedbackModalState.severity}
+        onClose={() => setFeedbackModalState({ ...feedbackModalState, open: false })}
+      />
     </Container>
   );
 }

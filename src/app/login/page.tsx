@@ -3,8 +3,9 @@
 import { useState } from 'react';
 import { signIn } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
-import { Box, TextField, Button, Typography, Alert, Paper } from '@mui/material';
+import { Box, TextField, Button, Typography, Paper } from '@mui/material';
 import Link from 'next/link';
+import FeedbackModal from '../components/FeedbackModal';
 import { keyframes } from '@emotion/react';
 
 // Define keyframes for a subtle background animation
@@ -37,7 +38,8 @@ export default function LoginPage() {
     }
   };
 
-  return (
+ return (
+  <>
     <Box
       sx={{
         minHeight: '100vh',
@@ -60,7 +62,7 @@ export default function LoginPage() {
           left: 0,
           width: '100%',
           height: '100%',
-          backgroundColor: 'rgba(105, 240, 174, 0.6)', // Brighter green overlay with opacity
+          backgroundColor: 'rgba(105, 240, 174, 0.6)',
           zIndex: 0,
         }}
       />
@@ -71,22 +73,22 @@ export default function LoginPage() {
           position: 'relative',
           zIndex: 1,
           display: 'flex',
-          flexDirection: { xs: 'column', md: 'row' }, // Stack vertically on small screens, side-by-side on medium and up
+          flexDirection: { xs: 'column', md: 'row' },
           justifyContent: 'space-between',
           alignItems: 'center',
           width: '100%',
-          maxWidth: 1200, // Max width for the content area
+          maxWidth: 1200,
           p: 3,
         }}
       >
-        {/* Left Side: Title and Phrase */}
+        {/* Left Side */}
         <Box
           sx={{
             textAlign: { xs: 'center', md: 'left' },
             color: 'white',
-            mb: { xs: 4, md: 0 }, // Margin bottom on small screens
+            mb: { xs: 4, md: 0 },
             maxWidth: { xs: '100%', md: '50%' },
-            paddingLeft: { md: 4 }, // Add padding to the left on medium screens and up
+            paddingLeft: { md: 4 },
           }}
         >
           <Typography variant="h1" component="h1" gutterBottom sx={{ whiteSpace: 'nowrap' }}>
@@ -97,7 +99,7 @@ export default function LoginPage() {
           </Typography>
         </Box>
 
-        {/* Right Side: Login Form Container */}
+        {/* Right Side: Login Form */}
         <Paper
           elevation={6}
           sx={{
@@ -105,64 +107,68 @@ export default function LoginPage() {
             display: 'flex',
             flexDirection: 'column',
             alignItems: 'center',
-            backgroundColor: 'rgba(255, 255, 255, 0.9)', // Slightly transparent white for the form background
+            backgroundColor: 'rgba(255, 255, 255, 0.9)',
             borderRadius: 2,
-            maxWidth: 400, // Adjusted max width for the form
+            maxWidth: 400,
             width: '100%',
           }}
         >
-        <Typography component="h1" variant="h5">
-          Login do Sistema
-        </Typography>
-        <Box component="form" onSubmit={handleSubmit} sx={{ mt: 1, width: '100%' }}>
-          <TextField
-            margin="normal"
-            required
-            fullWidth // Keep fullWidth to fill the compact Paper width
-            id="email"
-            label="Endereço de Email"
-            name="email"
-            autoComplete="email"
-            autoFocus
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-          />
-          <TextField
-            margin="normal"
-            required
-            fullWidth // Keep fullWidth to fill the compact Paper width
-            name="password"
-            label="Senha"
-            type="password"
-            id="password"
-            autoComplete="current-password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-          />
-          {error && <Alert severity="error" sx={{ width: '100%', mt: 2 }}>{error}</Alert>}
-          <Button
-            type="submit"
-            fullWidth
-            variant="contained"
-            sx={{ mt: 3, mb: 2 }}
-          >
-            Entrar
-          </Button>
-          <Box sx={{ display: 'flex', justifyContent: 'space-between', width: '100%', mt: 1 }}>
-            <Link href="/forgot-password" passHref>
-              <Typography variant="body2" color="primary" sx={{ cursor: 'pointer' }}>
-                Esqueceu a senha?
-              </Typography>
-            </Link>
-            <Link href="/signup" passHref>
-              <Typography variant="body2" color="primary" sx={{ cursor: 'pointer' }}>
-                Não tem uma conta? Cadastre-se
-              </Typography>
-            </Link>
+          <Typography component="h1" variant="h5">
+            Login do Sistema
+          </Typography>
+          <Box component="form" onSubmit={handleSubmit} sx={{ mt: 1, width: '100%' }}>
+            <TextField
+              margin="normal"
+              required
+              fullWidth
+              id="email"
+              label="Endereço de Email"
+              name="email"
+              autoComplete="email"
+              autoFocus
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+            />
+            <TextField
+              margin="normal"
+              required
+              fullWidth
+              name="password"
+              label="Senha"
+              type="password"
+              id="password"
+              autoComplete="current-password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+            />
+            <Button type="submit" fullWidth variant="contained" sx={{ mt: 3, mb: 2 }}>
+              Entrar
+            </Button>
+            <Box sx={{ display: 'flex', justifyContent: 'space-between', width: '100%', mt: 1 }}>
+              <Link href="/forgot-password" passHref>
+                <Typography variant="body2" color="primary" sx={{ cursor: 'pointer' }}>
+                  Esqueceu a senha?
+                </Typography>
+              </Link>
+              <Link href="/signup" passHref>
+                <Typography variant="body2" color="primary" sx={{ cursor: 'pointer' }}>
+                  Não tem uma conta? Cadastre-se
+                </Typography>
+              </Link>
+            </Box>
           </Box>
-        </Box>
-      </Paper>
+        </Paper>
       </Box>
     </Box>
+
+    {/* Feedback Modal dentro do fragment */}
+    <FeedbackModal
+      open={!!error}
+      message={error}
+      severity="error"
+      onClose={() => setError('')}
+    />
+  </>
   );
 }
+
