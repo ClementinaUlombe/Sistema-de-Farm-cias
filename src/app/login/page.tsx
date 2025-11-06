@@ -43,20 +43,15 @@ export default function LoginPage() {
         display: 'flex',
         justifyContent: 'center',
         alignItems: 'center',
-        // Using a placeholder image URL for a pharmacy/medical theme
-        backgroundImage: 'url(https://source.unsplash.com/random/?pharmacy,hospital)',
+        backgroundImage: 'url(/Farmacianochile.jpg)',
         backgroundSize: 'cover',
-        backgroundPosition: 'center',
+        backgroundPosition: 'center 20%',
         backgroundRepeat: 'no-repeat',
         position: 'relative',
         overflow: 'hidden',
-        // Subtle gradient animation for interactivity
-        background: 'linear-gradient(270deg, #00695c, #546e7a, #00695c)',
-        backgroundSize: '200% 200%',
-        animation: `${gradientAnimation} 15s ease infinite`,
       }}
     >
-      {/* Overlay */}
+      {/* Green Overlay */}
       <Box
         sx={{
           position: 'absolute',
@@ -64,27 +59,57 @@ export default function LoginPage() {
           left: 0,
           width: '100%',
           height: '100%',
-          backgroundColor: 'rgba(0, 0, 0, 0.6)', // Dark overlay
+          backgroundColor: 'rgba(105, 240, 174, 0.6)', // Brighter green overlay with opacity
           zIndex: 0,
         }}
       />
 
-      {/* Login Form Container */}
-      <Paper
-        elevation={6}
+      {/* Content Container */}
+      <Box
         sx={{
-          p: 4,
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
           position: 'relative',
           zIndex: 1,
-          backgroundColor: 'rgba(255, 255, 255, 0.9)', // Slightly transparent white for the form background
-          borderRadius: 2,
-          maxWidth: 360, // Adjusted max width for a more compact form
+          display: 'flex',
+          flexDirection: { xs: 'column', md: 'row' }, // Stack vertically on small screens, side-by-side on medium and up
+          justifyContent: 'space-between',
+          alignItems: 'center',
           width: '100%',
+          maxWidth: 1200, // Max width for the content area
+          p: 3,
         }}
       >
+        {/* Left Side: Title and Phrase */}
+        <Box
+          sx={{
+            textAlign: { xs: 'center', md: 'left' },
+            color: 'white',
+            mb: { xs: 4, md: 0 }, // Margin bottom on small screens
+            maxWidth: { xs: '100%', md: '50%' },
+            paddingLeft: { md: 4 }, // Add padding to the left on medium screens and up
+          }}
+        >
+          <Typography variant="h1" component="h1" gutterBottom sx={{ whiteSpace: 'nowrap' }}>
+            Farmacia da Luz
+          </Typography>
+          <Typography variant="h5">
+            Sua saúde é a nossa prioridade. Oferecemos uma ampla gama de produtos e serviços farmacêuticos com excelência e cuidado.
+          </Typography>
+        </Box>
+
+        {/* Right Side: Login Form Container */}
+        <Paper
+          elevation={6}
+          sx={{
+            p: 4,
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            backgroundColor: 'rgba(255, 255, 255, 0.9)', // Slightly transparent white for the form background
+            borderRadius: 2,
+            maxWidth: 400, // Adjusted max width for the form
+            width: '100%',
+          }}
+        >
         <Typography component="h1" variant="h5">
           Login do Sistema
         </Typography>
@@ -122,8 +147,21 @@ export default function LoginPage() {
           >
             Entrar
           </Button>
+          <Box sx={{ display: 'flex', justifyContent: 'space-between', width: '100%', mt: 1 }}>
+            <Link href="/forgot-password" passHref>
+              <Typography variant="body2" color="primary" sx={{ cursor: 'pointer' }}>
+                Esqueceu a senha?
+              </Typography>
+            </Link>
+            <Link href="/signup" passHref>
+              <Typography variant="body2" color="primary" sx={{ cursor: 'pointer' }}>
+                Não tem uma conta? Cadastre-se
+              </Typography>
+            </Link>
+          </Box>
         </Box>
       </Paper>
+      </Box>
     </Box>
   );
 }
