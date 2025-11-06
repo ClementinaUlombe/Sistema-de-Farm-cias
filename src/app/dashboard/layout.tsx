@@ -120,6 +120,16 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                     </ListItemButton>
                   </ListItem>
                 </Link>
+                <Link href="/dashboard/reports/sales" passHref>
+                  <ListItem disablePadding>
+                    <ListItemButton sx={{ bgcolor: '#69F0AE', '&:hover': { bgcolor: '#00E676' }, mb: 2 }}>
+                      <ListItemIcon sx={{ color: 'white' }}>
+                        <BarChartIcon />
+                      </ListItemIcon>
+                      <ListItemText primary="Relatório de Vendas" sx={{ color: 'white' }} />
+                    </ListItemButton>
+                  </ListItem>
+                </Link>
                 <Link href="/dashboard/reports" passHref>
                   <ListItem disablePadding>
                     <ListItemButton sx={{ bgcolor: '#69F0AE', '&:hover': { bgcolor: '#00E676' }, mb: 2 }}>

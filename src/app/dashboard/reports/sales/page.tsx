@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useSession } from 'next-auth/react';
 import { 
   Container, Box, Typography, CircularProgress, Alert, Grid, Paper, TextField, Button,
@@ -23,6 +23,12 @@ export default function SalesReportPage() {
   const [error, setError] = useState('');
   const [dates, setDates] = useState({ from: '', to: '' });
 
+  useEffect(() => {
+    if (status === 'authenticated' && session?.user?.role === UserRole.ADMIN) {
+      generateReport();
+    }
+  }, [status, session]);
+
   const handleDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setDates(prev => ({ ...prev, [e.target.name]: e.target.value }));
   };
@@ -32,7 +38,11 @@ export default function SalesReportPage() {
     setError('');
     setReportData(null);
     try {
-      const url = `/api/reports/sales?from=${dates.from}&to=${dates.to}`;
+      const params = new URLSearchParams();
+      if (dates.from) params.append('from', dates.from);
+      if (dates.to) params.append('to', dates.to);
+      const queryString = params.toString();
+      const url = `/api/reports/sales${queryString ? `?${queryString}` : ''}`;
       const res = await fetch(url);
       if (!res.ok) throw new Error((await res.json()).error || 'Falha ao gerar relatório');
       setReportData(await res.json());
