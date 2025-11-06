@@ -3,12 +3,13 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
-import { 
-  Container, Box, Typography, Button, CircularProgress, Alert, 
-  Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, 
-  Dialog, DialogActions, DialogContent, DialogTitle, TextField, Grid, Snackbar,
-  IconButton, Tooltip
+import {
+  Container, Box, Typography, Button, CircularProgress,
+  Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper,
+  Dialog, DialogActions, DialogContent, DialogTitle, TextField, Grid,
+  IconButton, Tooltip, Select, MenuItem, InputLabel, FormControl
 } from '@mui/material';
+import FeedbackModal from '../../components/FeedbackModal'; // Import FeedbackModal
 import { Edit as EditIcon, Delete as DeleteIcon } from '@mui/icons-material';
 import { UserRole } from '@prisma/client';
 
@@ -43,25 +44,27 @@ const initialProductState = {
 export default function ProductsPage() {
   const { data: session, status } = useSession();
   const router = useRouter();
-  
+
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
-  
+  // const [error, setError] = useState(''); // No longer needed if using feedbackModalState for errors
+
   const [modalOpen, setModalOpen] = useState(false);
   const [formState, setFormState] = useState(initialProductState);
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
 
   const [deleteConfirm, setDeleteConfirm] = useState({ open: false, productId: '' });
-  const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: 'success' as 'success' | 'error' });
+  const [feedbackModalState, setFeedbackModalState] = useState({ open: false, message: '', severity: 'success' as 'success' | 'error' }); // Replaced snackbar state
 
   const fetchProducts = useCallback(async () => {
     try {
       const res = await fetch('/api/products');
       if (!res.ok) throw new Error((await res.json()).error || 'Falha ao carregar produtos');
       setProducts(await res.json());
-    } catch (err: any) { setError(err.message); }
-  }, []);
+    } catch (err: any) {
+      setFeedbackModalState({ open: true, message: err.message, severity: 'error' }); // Use feedback modal for errors
+    }
+  }, [setFeedbackModalState]); // Add setFeedbackModalState to dependencies
 
   useEffect(() => {
     if (status === 'unauthenticated') router.push('/login');
@@ -69,11 +72,17 @@ export default function ProductsPage() {
       const userRole = session.user?.role as UserRole;
       if (![UserRole.ADMIN, UserRole.STOCKIST].includes(userRole)) {
         setLoading(false);
+        // Display access denied modal
+        setFeedbackModalState({
+          open: true,
+          message: 'Acesso Negado. Apenas Administradores e Stockistas podem ver esta página.',
+          severity: 'error',
+        });
         return;
       }
       fetchProducts().finally(() => setLoading(false));
     }
-  }, [status, session, router, fetchProducts]);
+  }, [status, session, router, fetchProducts, setFeedbackModalState]); // Add setFeedbackModalState to dependencies
 
   const handleOpenModal = (product: Product | null = null) => {
     if (product) {
@@ -116,11 +125,16 @@ export default function ProductsPage() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formState),
       });
-      if (!res.ok) throw new Error((await res.json()).error || 'Falha ao salvar produto');
+      if (!res.ok) {
+        const errorData = await res.json();
+        throw new Error(errorData.error || 'Falha ao salvar produto');
+      }
       await fetchProducts();
-      setSnackbar({ open: true, message: `Produto ${editingProduct ? 'atualizado' : 'adicionado'} com sucesso!`, severity: 'success' });
+      setFeedbackModalState({ open: true, message: `Produto ${editingProduct ? 'atualizado' : 'adicionado'} com sucesso!`, severity: 'success' }); // Use feedback modal for success
       handleCloseModal();
-    } catch (err: any) { setSnackbar({ open: true, message: err.message, severity: 'error' }); }
+    } catch (err: any) {
+      setFeedbackModalState({ open: true, message: err.message, severity: 'error' }); // Use feedback modal for errors
+    }
   };
 
   const handleDeleteClick = (productId: string) => setDeleteConfirm({ open: true, productId });
@@ -128,15 +142,27 @@ export default function ProductsPage() {
   const handleDeleteConfirm = async () => {
     try {
       const res = await fetch(`/api/products/${deleteConfirm.productId}`, { method: 'DELETE' });
-      if (!res.ok) throw new Error((await res.json()).error || 'Falha ao apagar produto');
+      if (!res.ok) {
+        const errorData = await res.json();
+        throw new Error(errorData.error || 'Falha ao apagar produto');
+      }
       await fetchProducts();
-      setSnackbar({ open: true, message: 'Produto apagado com sucesso!', severity: 'success' });
+      setFeedbackModalState({ open: true, message: 'Produto apagado com sucesso!', severity: 'success' }); // Use feedback modal for success
       handleDeleteCancel();
-    } catch (err: any) { setSnackbar({ open: true, message: err.message, severity: 'error' }); }
+    } catch (err: any) {
+      setFeedbackModalState({ open: true, message: err.message, severity: 'error' }); // Use feedback modal for errors
+    }
   };
 
   if (loading || status === 'loading') return <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}><CircularProgress /></Box>;
-  if (![UserRole.ADMIN, UserRole.STOCKIST].includes(session?.user?.role as UserRole)) return <Container><Alert severity="error" sx={{ mt: 4 }}>Acesso Negado.</Alert></Container>;
+  if (session?.user?.role !== UserRole.ADMIN && session?.user?.role !== UserRole.STOCKIST) return (
+    <FeedbackModal
+      open={feedbackModalState.open} // Use feedbackModalState for access denied
+      message="Acesso Negado. Apenas Administradores e Stockistas podem ver esta página."
+      severity="error"
+      onClose={() => router.push('/dashboard')}
+    />
+  );
 
   return (
     <Container component="main" maxWidth="xl" sx={{ mt: 4, mb: 4 }}>
@@ -145,7 +171,7 @@ export default function ProductsPage() {
         <Button variant="contained" onClick={() => handleOpenModal()}>Adicionar Novo Produto</Button>
       </Box>
 
-      {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
+      {/* Removed error Alert, now handled by FeedbackModal */}
 
       <TableContainer component={Paper}>
         <Table>
@@ -210,12 +236,13 @@ export default function ProductsPage() {
         </DialogActions>
       </Dialog>
 
-      {/* Snackbar for feedback */}
-      <Snackbar open={snackbar.open} autoHideDuration={6000} onClose={() => setSnackbar(prev => ({...prev, open: false}))} anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}>
-        <Alert onClose={() => setSnackbar(prev => ({...prev, open: false}))} severity={snackbar.severity} sx={{ width: '100%' }}>
-          {snackbar.message}
-        </Alert>
-      </Snackbar>
+      {/* Feedback Modal */}
+      <FeedbackModal
+        open={feedbackModalState.open}
+        message={feedbackModalState.message}
+        severity={feedbackModalState.severity}
+        onClose={() => setFeedbackModalState({ ...feedbackModalState, open: false })}
+      />
     </Container>
   );
 }
