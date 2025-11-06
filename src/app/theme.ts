@@ -4,7 +4,10 @@ import { createTheme } from '@mui/material/styles';
 const theme = createTheme({
   palette: {
     primary: {
-      main: '#00695c', // A professional, deep teal/green
+      light: '#A7FFEB',
+      main: '#69F0AE',
+      dark: '#00BFA5',
+      contrastText: '#000', // Ensure contrast for text on primary color
     },
     secondary: {
       main: '#546e7a', // A cool grey for secondary actions
