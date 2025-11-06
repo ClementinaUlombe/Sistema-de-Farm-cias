@@ -2,20 +2,27 @@
 
 import { useSession, signOut } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { Box, Typography, Button, CircularProgress, List, ListItem, ListItemButton, ListItemIcon, ListItemText } from '@mui/material';
+import { Box, Typography, Button, CircularProgress, List, ListItem, ListItemButton, ListItemIcon, ListItemText, Collapse } from '@mui/material';
 import AddShoppingCartIcon from '@mui/icons-material/AddShoppingCart';
 import InventoryIcon from '@mui/icons-material/Inventory';
 import HistoryIcon from '@mui/icons-material/History';
 import AssignmentIcon from '@mui/icons-material/Assignment';
 import GroupIcon from '@mui/icons-material/Group';
 import BarChartIcon from '@mui/icons-material/BarChart';
+import SecurityIcon from '@mui/icons-material/Security';
+import ExpandLess from '@mui/icons-material/ExpandLess';
+import ExpandMore from '@mui/icons-material/ExpandMore';
+import RestoreIcon from '@mui/icons-material/Restore';
+import ListAltIcon from '@mui/icons-material/ListAlt';
+import BackupIcon from '@mui/icons-material/Backup';
 import { UserRole } from '@prisma/client';
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   const { data: session, status } = useSession();
   const router = useRouter();
+  const [auditoriaOpen, setAuditoriaOpen] = useState(false);
 
   useEffect(() => {
     if (status === 'unauthenticated') {
@@ -33,6 +40,11 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
   if (status === 'authenticated') {
     const userRole = session.user?.role as UserRole;
+
+    const handleAuditoriaClick = () => {
+      setAuditoriaOpen(!auditoriaOpen);
+    };
+
 
     return (
       <Box sx={{ display: 'flex', minHeight: '100vh' }}>
@@ -140,6 +152,33 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                     </ListItemButton>
                   </ListItem>
                 </Link>
+
+                {/* Auditoria e Segurança Collapsible Menu */}
+                <ListItemButton onClick={handleAuditoriaClick} sx={{ bgcolor: '#69F0AE', '&:hover': { bgcolor: '#00E676' }, mb: 2 }}>
+                  <ListItemIcon sx={{ color: 'white' }}>
+                    <SecurityIcon />
+                  </ListItemIcon>
+                  <ListItemText primary="Auditoria e Segurança" sx={{ color: 'white' }} />
+                  {auditoriaOpen ? <ExpandLess sx={{ color: 'white' }} /> : <ExpandMore sx={{ color: 'white' }} />}
+                </ListItemButton>
+                <Collapse in={auditoriaOpen} timeout="auto" unmountOnExit>
+                  <List component="div" disablePadding>
+                    <Link href="/dashboard/auditoria/recuperar-contas" passHref>
+                      <ListItemButton sx={{ pl: 4, mb: 1, bgcolor: '#69F0AE', '&:hover': { bgcolor: '#00E676' } }}>
+                        <ListItemIcon sx={{ color: 'white' }}><RestoreIcon /></ListItemIcon>
+                        <ListItemText primary="Recuperar Contas" sx={{ color: 'white' }} />
+                      </ListItemButton>
+                    </Link>
+                    <ListItemButton sx={{ pl: 4, mb: 1, bgcolor: '#69F0AE', '&:hover': { bgcolor: '#00E676' } }} disabled>
+                      <ListItemIcon sx={{ color: 'white' }}><ListAltIcon /></ListItemIcon>
+                      <ListItemText primary="Logs de Atividades" sx={{ color: 'white' }} />
+                    </ListItemButton>
+                    <ListItemButton sx={{ pl: 4, mb: 1, bgcolor: '#69F0AE', '&:hover': { bgcolor: '#00E676' } }} disabled>
+                      <ListItemIcon sx={{ color: 'white' }}><BackupIcon /></ListItemIcon>
+                      <ListItemText primary="Backup da Base de Dados" sx={{ color: 'white' }} />
+                    </ListItemButton>
+                  </List>
+                </Collapse>
               </>
             )}
           </List>

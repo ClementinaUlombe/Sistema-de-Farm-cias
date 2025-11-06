@@ -20,23 +20,23 @@ export async function PUT(req: Request, { params }: RouteParams) {
   }
 
   try {
-    const { name, email, role, password } = await req.json();
+    const { name, email, role, password, isActive } = await req.json();
 
+    // Basic validation for required fields when not just changing status
     if (!name || !email || !role) {
       return new NextResponse(JSON.stringify({ error: 'Nome, email e perfil são obrigatórios' }), { status: 400 });
     }
 
-    // Check if user exists and is active before update
     const existingUser = await prisma.user.findUnique({
       where: { id },
     });
 
-    if (!existingUser || !existingUser.isActive) {
-      return new NextResponse(JSON.stringify({ error: 'Utilizador não encontrado ou inativo' }), { status: 404 });
+    if (!existingUser) {
+      return new NextResponse(JSON.stringify({ error: 'Utilizador não encontrado' }), { status: 404 });
     }
 
     // Check if email is already in use by another user
-    if (email !== existingUser.email) {
+    if (email && email !== existingUser.email) {
       const userWithSameEmail = await prisma.user.findUnique({
         where: { email },
       });
@@ -46,7 +46,7 @@ export async function PUT(req: Request, { params }: RouteParams) {
     }
 
     // Prevent admin from changing their own role
-    if (session.user.id === id && session.user.role !== role) {
+    if (session.user.id === id && role && session.user.role !== role) {
         return new NextResponse(JSON.stringify({ error: 'Não pode alterar o seu próprio perfil.' }), { status: 403 });
     }
 
@@ -55,14 +55,23 @@ export async function PUT(req: Request, { params }: RouteParams) {
       hashedPassword = await hash(password, 12);
     }
 
+    const dataToUpdate: any = {
+      name,
+      email,
+      role,
+    };
+
+    if (password) {
+      dataToUpdate.password = hashedPassword;
+    }
+
+    if (isActive !== undefined) {
+      dataToUpdate.isActive = isActive;
+    }
+
     const updatedUser = await prisma.user.update({
       where: { id },
-      data: {
-        name,
-        email,
-        role,
-        ...(password && { password: hashedPassword }), // Only include password if it was provided
-      },
+      data: dataToUpdate,
     });
 
     const { password: _, ...userToReturn } = updatedUser;
@@ -75,28 +84,42 @@ export async function PUT(req: Request, { params }: RouteParams) {
 }
 
 // DELETE: Delete a user
+// DELETE: Delete a user
 export async function DELETE(req: Request, { params }: RouteParams) {
   const session = await getServerSession(authOptions);
   const { id } = params;
 
-  if (session?.user?.role !== UserRole.ADMIN) {
+  if (!session) {
+    return new NextResponse(JSON.stringify({ error: 'Sessão não encontrada' }), { status: 401 });
+  }
+
+  if (session.user.role !== UserRole.ADMIN) {
     return new NextResponse(JSON.stringify({ error: 'Acesso não autorizado' }), { status: 403 });
   }
 
-  // Prevent admin from deleting themselves
+  // Impede o admin de apagar a própria conta
   if (session.user.id === id) {
     return new NextResponse(JSON.stringify({ error: 'Não pode apagar a sua própria conta.' }), { status: 403 });
   }
 
   try {
-    await prisma.user.update({
+    const userExists = await prisma.user.findUnique({ where: { id } });
+
+    if (!userExists) {
+      return new NextResponse(JSON.stringify({ error: 'Utilizador não encontrado' }), { status: 404 });
+    }
+
+    // Aqui "apagar" apenas desativa o utilizador
+    const deletedUser = await prisma.user.update({
       where: { id },
       data: { isActive: false },
     });
 
-    return new NextResponse(null, { status: 204 }); // No Content
+    return NextResponse.json({
+      message: `Utilizador ${deletedUser.name} desativado com sucesso.`,
+    });
   } catch (error) {
-    console.error(error);
+    console.error('Erro ao apagar utilizador:', error);
     return new NextResponse(JSON.stringify({ error: 'Erro ao apagar utilizador' }), { status: 500 });
   }
 }
