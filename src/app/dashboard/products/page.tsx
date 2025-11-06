@@ -10,7 +10,8 @@ import {
   IconButton, Tooltip, Select, MenuItem, InputLabel, FormControl
 } from '@mui/material';
 import FeedbackModal from '../../components/FeedbackModal'; // Import FeedbackModal
-import { Edit as EditIcon, Delete as DeleteIcon } from '@mui/icons-material';
+import BarcodeScanner from '../../components/BarcodeScanner';
+import { Edit as EditIcon, Delete as DeleteIcon, QrCodeScanner as QrCodeScannerIcon } from '@mui/icons-material';
 import { UserRole } from '@prisma/client';
 
 // Full product type to handle all fields
@@ -55,6 +56,7 @@ export default function ProductsPage() {
 
   const [deleteConfirm, setDeleteConfirm] = useState({ open: false, productId: '' });
   const [feedbackModalState, setFeedbackModalState] = useState({ open: false, message: '', severity: 'success' as 'success' | 'error' }); // Replaced snackbar state
+  const [scannerOpen, setScannerOpen] = useState(false);
 
   const fetchProducts = useCallback(async () => {
     try {
@@ -114,6 +116,12 @@ export default function ProductsPage() {
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormState(prev => ({ ...prev, [name]: value }));
+  };
+
+  const handleScanSuccess = (decodedText: string) => {
+    setFormState(prev => ({ ...prev, barcode: decodedText }));
+    setScannerOpen(false);
+    setFeedbackModalState({ open: true, message: 'Código de barras lido com sucesso!', severity: 'success' });
   };
 
   const handleSubmit = async () => {
@@ -217,7 +225,16 @@ export default function ProductsPage() {
             <Grid item xs={12} sm={6}><TextField label="Quantidade em Stock" name="stockQuantity" type="number" value={formState.stockQuantity} onChange={handleInputChange} fullWidth required /></Grid>
             <Grid item xs={12} sm={6}><TextField label="Stock Mínimo" name="minStockQuantity" type="number" value={formState.minStockQuantity} onChange={handleInputChange} fullWidth required /></Grid>
             <Grid item xs={12} sm={6}><TextField label="Data de Validade" name="expiryDate" type="date" value={formState.expiryDate} onChange={handleInputChange} fullWidth required InputLabelProps={{ shrink: true }} /></Grid>
-            <Grid item xs={12} sm={6}><TextField label="Código de Barras (Opcional)" name="barcode" value={formState.barcode} onChange={handleInputChange} fullWidth /></Grid>
+            <Grid item xs={12} sm={6}>
+              <Box sx={{ display: 'flex', alignItems: 'flex-end', gap: 1 }}>
+                <TextField label="Código de Barras (Opcional)" name="barcode" value={formState.barcode} onChange={handleInputChange} fullWidth />
+                <Tooltip title="Escanear Código de Barras">
+                  <IconButton color="primary" onClick={() => setScannerOpen(true)}>
+                    <QrCodeScannerIcon />
+                  </IconButton>
+                </Tooltip>
+              </Box>
+            </Grid>
           </Grid>
         </DialogContent>
         <DialogActions>
@@ -225,6 +242,13 @@ export default function ProductsPage() {
           <Button onClick={handleSubmit} variant="contained">Salvar</Button>
         </DialogActions>
       </Dialog>
+
+      <BarcodeScanner
+        isOpen={scannerOpen}
+        onClose={() => setScannerOpen(false)}
+        onScanSuccess={handleScanSuccess}
+        onScanError={(error) => setFeedbackModalState({ open: true, message: `Erro ao escanear: ${error}`, severity: 'error' })}
+      />
 
       {/* Delete Confirmation Dialog */}
       <Dialog open={deleteConfirm.open} onClose={handleDeleteCancel}>

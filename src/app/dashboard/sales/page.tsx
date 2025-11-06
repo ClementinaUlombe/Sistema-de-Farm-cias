@@ -9,11 +9,12 @@ import {
   Dialog, DialogTitle, DialogContent, DialogActions, Table, TableBody, TableCell, TableRow, TableHead, TableContainer
 } from '@mui/material';
 import FeedbackModal from '../../components/FeedbackModal';
-import { AddCircleOutline, RemoveCircleOutline, Delete, Print } from '@mui/icons-material';
+import BarcodeScanner from '../../components/BarcodeScanner';
+import { AddCircleOutline, RemoveCircleOutline, Delete, Print, QrCodeScanner as QrCodeScannerIcon } from '@mui/icons-material';
 import { UserRole } from '@prisma/client';
 
 // Types
-interface Product { id: string; name: string; stockQuantity: number; sellingPrice: number; }
+interface Product { id: string; name: string; stockQuantity: number; sellingPrice: number; barcode: string | null; }
 interface CartItem extends Product { quantity: number; }
 interface LastSaleData { id: string; createdAt: string; total: number; discount: number; paymentMethod: string; attendant: { name: string }; items: { quantity: number; priceAtSale: number; product: { name: string } }[]; }
 
@@ -28,6 +29,7 @@ export default function SalesPage() {
   const [submitting, setSubmitting] = useState(false);
   const [feedbackModalState, setFeedbackModalState] = useState({ open: false, message: '', severity: 'success' as 'success' | 'error' });
   const [accessDeniedModalOpen, setAccessDeniedModalOpen] = useState(false);
+  const [scannerOpen, setScannerOpen] = useState(false);
 
 
   // Sale State
@@ -62,6 +64,17 @@ export default function SalesPage() {
     setReceiptOpen(false);
     setAccessDeniedModalOpen(false);
     setFeedbackModalState({ open: false, message: '', severity: 'success' }); // Reset feedback modal
+  };
+
+  const handleScanSuccess = (decodedText: string) => {
+    setScannerOpen(false);
+    const product = products.find(p => p.barcode === decodedText);
+    if (product) {
+      addToCart(product);
+      setFeedbackModalState({ open: true, message: `Produto ${product.name} adicionado ao carrinho.`, severity: 'success' });
+    } else {
+      setFeedbackModalState({ open: true, message: 'Produto não encontrado com este código de barras.', severity: 'error' });
+    }
   };
 
   const addToCart = (product: Product) => {
@@ -116,7 +129,18 @@ export default function SalesPage() {
           {/* Left Side: Search and Cart */}
           <Grid item xs={12} md={7}>
             <Paper sx={{ p: 2 }}>
-              <Autocomplete options={Array.isArray(products) ? products.filter(p => p.stockQuantity > 0) : []} getOptionLabel={(o) => `${o.name} (Stock: ${o.stockQuantity})`} onChange={(e, val) => val && addToCart(val)} renderInput={(params) => <TextField {...params} label="Pesquisar Produto" />} />
+              <Box sx={{ display: 'flex', gap: 1, mb: 2 }}>
+                <Autocomplete
+                  options={Array.isArray(products) ? products.filter(p => p.stockQuantity > 0) : []}
+                  getOptionLabel={(o) => `${o.name} (Stock: ${o.stockQuantity})`}
+                  onChange={(e, val) => val && addToCart(val)}
+                  renderInput={(params) => <TextField {...params} label="Pesquisar Produto" />}
+                  sx={{ flexGrow: 1 }}
+                />
+                <IconButton color="primary" onClick={() => setScannerOpen(true)}>
+                  <QrCodeScannerIcon />
+                </IconButton>
+              </Box>
               <List sx={{ mt: 2 }}>
                 {cart.map(item => (
                   <ListItem key={item.id} divider>
@@ -196,29 +220,11 @@ export default function SalesPage() {
         </DialogActions>
       </Dialog>
 
-      {/* Print Styles */}
-      <style jsx global>{`
-        @media print {
-          body * {
-            visibility: hidden;
-          }
-          #receipt-content, #receipt-content * {
-            visibility: visible;
-          }
-          #receipt-content {
-            position: absolute;
-            left: 0;
-            top: 0;
-            width: 100%;
-          }
-        }
-      `}</style>
-
-      <FeedbackModal
-        open={feedbackModalState.open}
-        message={feedbackModalState.message}
-        severity={feedbackModalState.severity}
-        onClose={() => setFeedbackModalState({ ...feedbackModalState, open: false })}
+      <BarcodeScanner
+        isOpen={scannerOpen}
+        onClose={() => setScannerOpen(false)}
+        onScanSuccess={handleScanSuccess}
+        onScanError={(error) => setFeedbackModalState({ open: true, message: `Erro ao escanear: ${error}`, severity: 'error' })}
       />
     </>
   );
