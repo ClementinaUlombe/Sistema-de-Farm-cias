@@ -63,9 +63,11 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             py: 4,
           }}
         >
-          <Typography component="h1" variant="h6" sx={{ mb: 2 }}>
-            Dashboard
-          </Typography>
+          <Link href="/dashboard" passHref style={{ textDecoration: 'none', color: 'inherit' }}>
+            <Typography component="h1" variant="h6" sx={{ mb: 2 }}>
+              Dashboard
+            </Typography>
+          </Link>
           <Typography variant="subtitle1" sx={{ mb: 4 }}>
             Olá, {session.user?.name}!
           </Typography>
