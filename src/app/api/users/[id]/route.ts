@@ -26,6 +26,25 @@ export async function PUT(req: Request, { params }: RouteParams) {
       return new NextResponse(JSON.stringify({ error: 'Nome, email e perfil são obrigatórios' }), { status: 400 });
     }
 
+    // Check if user exists and is active before update
+    const existingUser = await prisma.user.findUnique({
+      where: { id },
+    });
+
+    if (!existingUser || !existingUser.isActive) {
+      return new NextResponse(JSON.stringify({ error: 'Utilizador não encontrado ou inativo' }), { status: 404 });
+    }
+
+    // Check if email is already in use by another user
+    if (email !== existingUser.email) {
+      const userWithSameEmail = await prisma.user.findUnique({
+        where: { email },
+      });
+      if (userWithSameEmail) {
+        return new NextResponse(JSON.stringify({ error: 'Este email já está em uso.' }), { status: 409 });
+      }
+    }
+
     // Prevent admin from changing their own role
     if (session.user.id === id && session.user.role !== role) {
         return new NextResponse(JSON.stringify({ error: 'Não pode alterar o seu próprio perfil.' }), { status: 403 });
@@ -70,8 +89,9 @@ export async function DELETE(req: Request, { params }: RouteParams) {
   }
 
   try {
-    await prisma.user.delete({
+    await prisma.user.update({
       where: { id },
+      data: { isActive: false },
     });
 
     return new NextResponse(null, { status: 204 }); // No Content

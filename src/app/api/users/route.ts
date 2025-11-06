@@ -16,12 +16,14 @@ export async function GET(req: Request) {
 
   try {
     const users = await prisma.user.findMany({
+      where: { isActive: true },
       // Exclude passwords from the result
       select: {
         id: true,
         name: true,
         email: true,
         role: true,
+        isActive: true,
         createdAt: true,
       },
       orderBy: {
