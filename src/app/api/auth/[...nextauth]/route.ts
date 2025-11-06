@@ -86,6 +86,7 @@ export const authOptions: AuthOptions = {
             actorName: message.user.name!,
             action: 'USER_LOGIN',
             targetId: message.user.id!,
+            details: { message: 'Utilizador iniciou sessão com sucesso' }
           }
         });
       }
@@ -97,6 +98,7 @@ export const authOptions: AuthOptions = {
           actorName: message.token.name!,
           action: 'USER_LOGOUT',
           targetId: message.token.sub!,
+          details: { message: 'Utilizador terminou sessão com sucesso' }
         }
       });
     }

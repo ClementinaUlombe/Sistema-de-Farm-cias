@@ -82,7 +82,7 @@ export async function PUT(req: Request, { params }: RouteParams) {
         actorName: session.user.name!,
         action: action,
         targetId: updatedUser.id,
-        details: { dataToUpdate },
+        details: dataToUpdate,
       }
     });
 
@@ -110,7 +110,13 @@ export async function DELETE(req: Request, { params }: RouteParams) {
   }
 
   try {
-    const userToDeactivate = await prisma.user.update({
+    const userToDeactivate = await prisma.user.findUnique({ where: { id } });
+
+    if (!userToDeactivate) {
+      return new NextResponse(JSON.stringify({ error: 'Utilizador não encontrado' }), { status: 404 });
+    }
+
+    await prisma.user.update({
       where: { id },
       data: { isActive: false },
     });
@@ -122,6 +128,7 @@ export async function DELETE(req: Request, { params }: RouteParams) {
         actorName: session.user.name!,
         action: 'USER_DEACTIVATED',
         targetId: userToDeactivate.id,
+        details: { name: userToDeactivate.name, email: userToDeactivate.email },
       }
     });
 
