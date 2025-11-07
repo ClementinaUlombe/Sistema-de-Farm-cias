@@ -50,19 +50,14 @@ export async function PUT(req: Request, { params }: RouteParams) {
         return new NextResponse(JSON.stringify({ error: 'Não pode alterar o seu próprio perfil.' }), { status: 403 });
     }
 
-    let hashedPassword;
-    if (password) {
-      hashedPassword = await hash(password, 12);
-    }
-
     const dataToUpdate: any = {
       name,
       email,
       role,
     };
 
-    if (password) {
-      dataToUpdate.password = hashedPassword;
+    if (password && password.length > 0) {
+      dataToUpdate.password = await hash(password, 12);
     }
 
     if (isActive !== undefined) {

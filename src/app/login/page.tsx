@@ -62,7 +62,7 @@ export default function LoginPage() {
           left: 0,
           width: '100%',
           height: '100%',
-          backgroundColor: 'rgba(105, 240, 174, 0.6)',
+          backgroundColor: 'rgba(11, 11, 11, 0.9)',
           zIndex: 0,
         }}
       />
@@ -141,21 +141,10 @@ export default function LoginPage() {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
             />
-            <Button type="submit" fullWidth variant="contained" sx={{ mt: 3, mb: 2 }}>
+            <Button type="submit" fullWidth variant="contained" sx={{ mt: 3, mb: 2, color: 'white' }}>
               Entrar
             </Button>
-            <Box sx={{ display: 'flex', justifyContent: 'space-between', width: '100%', mt: 1 }}>
-              <Link href="/forgot-password" passHref>
-                <Typography variant="body2" color="primary" sx={{ cursor: 'pointer' }}>
-                  Esqueceu a senha?
-                </Typography>
-              </Link>
-              <Link href="/signup" passHref>
-                <Typography variant="body2" color="primary" sx={{ cursor: 'pointer' }}>
-                  Não tem uma conta? Cadastre-se
-                </Typography>
-              </Link>
-            </Box>
+
           </Box>
         </Paper>
       </Box>

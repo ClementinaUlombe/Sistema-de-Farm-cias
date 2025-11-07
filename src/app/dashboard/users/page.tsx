@@ -40,7 +40,8 @@ export default function UsersPage() {
   const [formState, setFormState] = useState(initialFormState);
   const [editingUser, setEditingUser] = useState<User | null>(null);
 
-  const [deleteConfirm, setDeleteConfirm] = useState({ open: false, userId: '' });
+  const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
+  const [userIdToDelete, setUserIdToDelete] = useState('');
   const [feedbackModalState, setFeedbackModalState] = useState({ open: false, message: '', severity: 'success' as 'success' | 'error' });
 
   const fetchUsers = useCallback(async () => {
@@ -88,10 +89,16 @@ export default function UsersPage() {
     const url = editingUser ? `/api/users/${editingUser.id}` : '/api/users';
     const method = editingUser ? 'PUT' : 'POST';
     try {
+      const dataToSend: any = { ...formState };
+      if (editingUser) {
+        delete dataToSend.id;
+        delete dataToSend.isActive;
+      }
+
       const res = await fetch(url, {
         method,
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formState),
+        body: JSON.stringify(dataToSend),
       });
       if (!res.ok) throw new Error((await res.json()).error || 'Falha ao salvar utilizador');
       await fetchUsers();
@@ -100,11 +107,22 @@ export default function UsersPage() {
     } catch (err: any) { setFeedbackModalState({ open: true, message: err.message, severity: 'error' }); }
   };
 
-  const handleDeleteClick = (userId: string) => setDeleteConfirm({ open: true, userId });
-  const handleDeleteCancel = () => setDeleteConfirm({ open: false, userId: '' });
+  const handleDeleteClick = (userId: string) => {
+    setUserIdToDelete(userId);
+    setDeleteConfirmOpen(true);
+  };
+  const handleDeleteCancel = () => {
+    setDeleteConfirmOpen(false);
+    setUserIdToDelete('');
+  };
   const handleDeleteConfirm = async () => {
+    if (!userIdToDelete) {
+      setFeedbackModalState({ open: true, message: 'ID do utilizador não fornecido para apagar.', severity: 'error' });
+      handleDeleteCancel();
+      return;
+    }
     try {
-      const res = await fetch(`/api/users/${deleteConfirm.userId}`, { method: 'DELETE' });
+      const res = await fetch(`/api/users/${userIdToDelete}`, { method: 'DELETE' });
       if (!res.ok) throw new Error((await res.json()).error || 'Falha ao apagar utilizador');
       await fetchUsers();
       setFeedbackModalState({ open: true, message: 'Utilizador apagado com sucesso!', severity: 'success' });
@@ -175,7 +193,7 @@ export default function UsersPage() {
       </Dialog>
 
       {/* Delete Confirmation Dialog */}
-      <Dialog open={deleteConfirm.open} onClose={handleDeleteCancel}>
+      <Dialog open={deleteConfirmOpen} onClose={handleDeleteCancel}>
         <DialogTitle>Confirmar Exclusão</DialogTitle>
         <DialogContent><Typography>Tem a certeza que deseja apagar este utilizador?</Typography></DialogContent>
         <DialogActions>
