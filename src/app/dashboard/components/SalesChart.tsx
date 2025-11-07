@@ -1,8 +1,9 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { ComposedChart, Bar, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
-import { Box, Typography, CircularProgress, Alert, Paper } from '@mui/material';
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+import { Box, Typography, CircularProgress, Alert, Paper, Grid } from '@mui/material';
+import AnimatedNumber from './AnimatedNumber';
 
 interface ChartData {
   name: string;
@@ -18,12 +19,12 @@ const formatCurrency = (value: number) =>
 const CustomTooltip = ({ active, payload, label }: any) => {
   if (active && payload && payload.length) {
     return (
-      <Paper elevation={3} sx={{ padding: '10px', backgroundColor: 'rgba(255, 255, 255, 0.9)' }}>
+      <Paper elevation={3} sx={{ padding: '10px', backgroundColor: 'rgba(17, 215, 241, 0.9)' }}>
         <Typography variant="subtitle2" gutterBottom>{`Mês: ${label}`}</Typography>
-        <Typography variant="body2" sx={{ color: '#0088FE' }}>
+        <Typography variant="body2" sx={{ color: '#2196f3' }}>
           {`Vendas: ${formatCurrency(payload[0].value)}`}
         </Typography>
-        <Typography variant="body2" sx={{ color: '#FF8042' }}>
+        <Typography variant="body2" sx={{ color: '#4caf50' }}>
           {`Lucro: ${formatCurrency(payload[1].value)}`}
         </Typography>
       </Paper>
@@ -59,7 +60,7 @@ const SalesChart = () => {
 
   if (loading) {
     return (
-      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: 300 }}>
+      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: 400 }}>
         <CircularProgress />
       </Box>
     );
@@ -67,7 +68,7 @@ const SalesChart = () => {
 
   if (error) {
     return (
-      <Box sx={{ height: 300 }}>
+      <Box sx={{ height: 400 }}>
         <Alert severity="error">{error}</Alert>
       </Box>
     );
@@ -75,47 +76,57 @@ const SalesChart = () => {
   
   if (data.length === 0) {
     return (
-      <Box sx={{ height: 300, display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+      <Box sx={{ height: 400, display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
         <Typography variant="h6">Não há dados de vendas para exibir.</Typography>
       </Box>
     );
   }
 
+  const totalSales = data.reduce((acc, item) => acc + item.sales, 0);
+  const totalProfit = data.reduce((acc, item) => acc + item.profit, 0);
+
   return (
-    <Box sx={{ width: '100%', height: 400 }}>
-      <Typography variant="h5" gutterBottom sx={{ textAlign: 'center', marginBottom: '20px' }}>
+    <Paper elevation={3} sx={{ padding: '20px', width: '100%' }}>
+      <Typography variant="h5" gutterBottom sx={{ textAlign: 'center', marginBottom: '10px' }}>
         Análise de Vendas e Lucros
       </Typography>
-      <ResponsiveContainer width="100%" height="100%">
-        <ComposedChart
-          data={data}
-          margin={{ top: 5, right: 40, left: 30, bottom: 5 }}
-        >
-          <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
-          <XAxis 
-            dataKey="name" 
-            stroke="#666" 
-            tick={{ fill: '#666' }} 
-          />
-          <YAxis 
-            stroke="#666" 
-            tick={{ fill: '#666' }} 
-            tickFormatter={(value) => new Intl.NumberFormat('pt-AO', { 
-              notation: 'compact', 
-              compactDisplay: 'short' 
-            }).format(value as number)}
-          />
-          <Tooltip content={<CustomTooltip />} />
-          <Legend 
-            verticalAlign="top" 
-            height={36} 
-            iconType="circle"
-          />
-          <Bar dataKey="sales" name="Vendas" fill="#0088FE" />
-          <Line type="monotone" dataKey="profit" name="Lucro" stroke="#FF8042" strokeWidth={3} />
-        </ComposedChart>
-      </ResponsiveContainer>
-    </Box>
+      
+      <Grid container spacing={2} sx={{ marginBottom: '20px', textAlign: 'center' }}>
+        <Grid item xs={6}>
+          <Typography variant="h6" color="textSecondary">Vendas Totais</Typography>
+          <Typography variant="h4" sx={{ color: '#2196f3', fontWeight: 'bold' }}>
+            <AnimatedNumber value={totalSales} formatter={formatCurrency} />
+          </Typography>
+        </Grid>
+        <Grid item xs={6}>
+          <Typography variant="h6" color="textSecondary">Lucro Total</Typography>
+          <Typography variant="h4" sx={{ color: '#4caf50', fontWeight: 'bold' }}>
+            <AnimatedNumber value={totalProfit} formatter={formatCurrency} />
+          </Typography>
+        </Grid>
+      </Grid>
+
+      <Box sx={{ width: '100%', height: 300 }}>
+        <ResponsiveContainer width="100%" height="100%">
+          <BarChart data={data} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
+            <CartesianGrid strokeDasharray="3 3" vertical={false} />
+            <XAxis dataKey="name" stroke="#666" tick={{ fill: '#666' }} />
+            <YAxis 
+              stroke="#666" 
+              tick={{ fill: '#666' }} 
+              tickFormatter={(value) => new Intl.NumberFormat('pt-AO', { 
+                notation: 'compact', 
+                compactDisplay: 'short' 
+              }).format(value as number)}
+            />
+            <Tooltip content={<CustomTooltip />} cursor={{fill: 'rgba(0,0,0,0.05)'}} />
+            <Legend verticalAlign="top" height={36} />
+            <Bar dataKey="sales" name="Vendas" fill="#2196f3" radius={[4, 4, 0, 0]} isAnimationActive={true} />
+            <Bar dataKey="profit" name="Lucro" fill="#4caf50" radius={[4, 4, 0, 0]} isAnimationActive={true} />
+          </BarChart>
+        </ResponsiveContainer>
+      </Box>
+    </Paper>
   );
 };
 
