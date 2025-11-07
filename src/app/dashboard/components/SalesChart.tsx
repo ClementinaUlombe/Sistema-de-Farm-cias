@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
-import { Box, Typography, CircularProgress, Alert, Paper, Grid } from '@mui/material';
+import { Box, Typography, CircularProgress, Alert, Paper, Grid, useTheme } from '@mui/material';
 import AnimatedNumber from './AnimatedNumber';
 
 interface ChartData {
@@ -17,14 +17,15 @@ const formatCurrency = (value: number) =>
 
 // Componente de Tooltip Customizado
 const CustomTooltip = ({ active, payload, label }: any) => {
+  const theme = useTheme();
   if (active && payload && payload.length) {
     return (
-      <Paper elevation={3} sx={{ padding: '10px', backgroundColor: 'rgba(17, 215, 241, 0.9)' }}>
+      <Paper elevation={3} sx={{ padding: '10px', backgroundColor: 'rgba(255, 255, 255, 0.9)' }}>
         <Typography variant="subtitle2" gutterBottom>{`Mês: ${label}`}</Typography>
-        <Typography variant="body2" sx={{ color: '#2196f3' }}>
+        <Typography variant="body2" sx={{ color: theme.palette.secondary.main }}>
           {`Vendas: ${formatCurrency(payload[0].value)}`}
         </Typography>
-        <Typography variant="body2" sx={{ color: '#4caf50' }}>
+        <Typography variant="body2" sx={{ color: theme.palette.primary.main }}>
           {`Lucro: ${formatCurrency(payload[1].value)}`}
         </Typography>
       </Paper>
@@ -37,6 +38,7 @@ const SalesChart = () => {
   const [data, setData] = useState<ChartData[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const theme = useTheme();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -94,13 +96,13 @@ const SalesChart = () => {
       <Grid container spacing={2} sx={{ marginBottom: '20px', textAlign: 'center' }}>
         <Grid item xs={6}>
           <Typography variant="h6" color="textSecondary">Vendas Totais</Typography>
-          <Typography variant="h4" sx={{ color: '#2196f3', fontWeight: 'bold' }}>
+          <Typography variant="h4" sx={{ color: theme.palette.secondary.main, fontWeight: 'bold' }}>
             <AnimatedNumber value={totalSales} formatter={formatCurrency} />
           </Typography>
         </Grid>
         <Grid item xs={6}>
           <Typography variant="h6" color="textSecondary">Lucro Total</Typography>
-          <Typography variant="h4" sx={{ color: '#4caf50', fontWeight: 'bold' }}>
+          <Typography variant="h4" sx={{ color: theme.palette.primary.main, fontWeight: 'bold' }}>
             <AnimatedNumber value={totalProfit} formatter={formatCurrency} />
           </Typography>
         </Grid>
@@ -121,8 +123,8 @@ const SalesChart = () => {
             />
             <Tooltip content={<CustomTooltip />} cursor={{fill: 'rgba(0,0,0,0.05)'}} />
             <Legend verticalAlign="top" height={36} />
-            <Bar dataKey="sales" name="Vendas" fill="#2196f3" radius={[4, 4, 0, 0]} isAnimationActive={true} />
-            <Bar dataKey="profit" name="Lucro" fill="#4caf50" radius={[4, 4, 0, 0]} isAnimationActive={true} />
+            <Bar dataKey="sales" name="Vendas" fill={theme.palette.secondary.main} radius={[4, 4, 0, 0]} isAnimationActive={true} />
+            <Bar dataKey="profit" name="Lucro" fill={theme.palette.primary.main} radius={[4, 4, 0, 0]} isAnimationActive={true} />
           </BarChart>
         </ResponsiveContainer>
       </Box>

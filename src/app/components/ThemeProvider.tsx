@@ -29,15 +29,14 @@ export default function AppThemeProvider({ children }: ThemeProviderProps) {
           mode,
           ...(mode === 'light'
             ? {
-                // palette values for light mode
                 primary: {
-                  light: '#A7FFEB',
-                  main: '#69F0AE',
-                  dark: '#00BFA5',
+                  light: '#a2d46e',
+                  main: '#8bc34a',
+                  dark: '#7cb342',
                   contrastText: '#000',
                 },
                 secondary: {
-                  main: '#546e7a',
+                  main: '#9c27b0',
                 },
                 background: {
                   default: '#f5f5f5',
@@ -47,13 +46,13 @@ export default function AppThemeProvider({ children }: ThemeProviderProps) {
             : {
                 // palette values for dark mode
                 primary: {
-                  light: '#A7FFEB',
-                  main: '#69F0AE',
-                  dark: '#00BFA5',
+                  light: '#a2d46e',
+                  main: '#8bc34a',
+                  dark: '#7cb342',
                   contrastText: '#000',
                 },
                 secondary: {
-                  main: '#90a4ae',
+                  main: '#ce93d8',
                 },
                 background: {
                   default: '#121212',
