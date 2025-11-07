@@ -1,18 +1,64 @@
-import React from 'react';
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
-import { Box, Typography } from '@mui/material';
+'use client';
 
-const data = [
-  { name: 'Jan', sales: 4000, profit: 2400 },
-  { name: 'Feb', sales: 3000, profit: 1398 },
-  { name: 'Mar', sales: 2000, profit: 9800 },
-  { name: 'Apr', sales: 2780, profit: 3908 },
-  { name: 'May', sales: 1890, profit: 4800 },
-  { name: 'Jun', sales: 2390, profit: 3800 },
-  { name: 'Jul', sales: 3490, profit: 4300 },
-];
+import React, { useState, useEffect } from 'react';
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+import { Box, Typography, CircularProgress, Alert } from '@mui/material';
+
+interface ChartData {
+  name: string;
+  sales: number;
+  profit: number;
+}
 
 const SalesChart = () => {
+  const [data, setData] = useState<ChartData[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        setLoading(true);
+        const response = await fetch('/api/sales');
+        if (!response.ok) {
+          throw new Error('Falha ao buscar os dados de vendas.');
+        }
+        const jsonData = await response.json();
+        setData(jsonData);
+      } catch (err: any) {
+        setError(err.message || 'Ocorreu um erro.');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, []);
+
+  if (loading) {
+    return (
+      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: 300 }}>
+        <CircularProgress />
+      </Box>
+    );
+  }
+
+  if (error) {
+    return (
+      <Box sx={{ height: 300 }}>
+        <Alert severity="error">{error}</Alert>
+      </Box>
+    );
+  }
+  
+  if (data.length === 0) {
+    return (
+      <Box sx={{ height: 300, display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+        <Typography variant="h6">Não há dados de vendas para exibir.</Typography>
+      </Box>
+    );
+  }
+
   return (
     <Box sx={{ width: '100%', height: 300 }}>
       <Typography variant="h6" gutterBottom>
@@ -33,8 +79,8 @@ const SalesChart = () => {
           <YAxis />
           <Tooltip />
           <Legend />
-          <Line type="monotone" dataKey="sales" stroke="#8884d8" activeDot={{ r: 8 }} />
-          <Line type="monotone" dataKey="profit" stroke="#82ca9d" />
+          <Line type="monotone" dataKey="sales" stroke="#8884d8" name="Vendas" activeDot={{ r: 8 }} />
+          <Line type="monotone" dataKey="profit" stroke="#82ca9d" name="Lucro" />
         </LineChart>
       </ResponsiveContainer>
     </Box>

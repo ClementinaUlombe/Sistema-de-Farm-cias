@@ -2,12 +2,66 @@ import { NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth/next';
 import { authOptions } from '@/app/api/auth/[...nextauth]/route';
 import { PrismaClient, UserRole } from '@prisma/client';
+import { zonedTimeToUtc, toZonedTime, format } from 'date-fns-tz';
+import { ptBR } from 'date-fns/locale';
+
 
 const prisma = new PrismaClient();
 
 interface CartItem {
   id: string;
   quantity: number;
+}
+export async function GET() {
+  const session = await getServerSession(authOptions);
+
+  if (!session || !session.user || session.user.role !== UserRole.ADMIN) {
+    return new NextResponse(JSON.stringify({ error: 'Acesso não autorizado' }), { status: 403 });
+  }
+
+  try {
+    const saleItems = await prisma.saleItem.findMany({
+      include: {
+        product: true, 
+        sale: true,    
+      },
+      orderBy: {
+        sale: {
+          createdAt: 'asc',
+        },
+      },
+    });
+
+    if (saleItems.length === 0) {
+      return new NextResponse(JSON.stringify([]), { status: 200 });
+    }
+
+    const monthlyData = saleItems.reduce((acc, item) => {
+      const timeZone = 'America/Sao_Paulo'; 
+      const zonedDate = toZonedTime(item.sale.createdAt, timeZone);
+      const monthName = format(zonedDate, 'MMM', { locale: ptBR });
+      
+      const saleValue = item.priceAtSale * item.quantity;
+      const profit = (item.priceAtSale - item.product.purchasePrice) * item.quantity;
+
+      if (!acc[monthName]) {
+        acc[monthName] = { name: monthName, sales: 0, profit: 0 };
+      }
+
+      acc[monthName].sales += saleValue;
+      acc[monthName].profit += profit;
+
+      return acc;
+    }, {} as Record<string, { name: string; sales: number; profit: number }>);
+
+    const chartData = Object.values(monthlyData);
+
+    return new NextResponse(JSON.stringify(chartData), { status: 200 });
+
+  } catch (error) {
+    console.error("Erro ao buscar dados de vendas para o gráfico:", error);
+    return new NextResponse(JSON.stringify({ error: 'Erro interno do servidor' }), { status: 500 });
+  }
 }
 
 // POST: Create a new sale (securely calculates total on the backend)
