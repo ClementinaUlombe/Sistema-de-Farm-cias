@@ -143,7 +143,7 @@ const StockAlertsChart = () => {
       <Typography variant="h5" gutterBottom sx={{ textAlign: 'center', marginBottom: '20px' }}>
         Alertas e Relatórios de Stock
       </Typography>
-      <Grid container spacing={4}>
+      <Grid container spacing={6} justifyContent="center">
         {/* Produtos com Stock Baixo */}
         <Grid item xs={12} md={6}>
           <Typography variant="h6" gutterBottom sx={{ textAlign: 'center' }}>
@@ -220,7 +220,7 @@ const StockAlertsChart = () => {
         </Grid>
 
         {/* Movimentações de Stock Recentes */}
-        <Grid item xs={12} md={6}>
+        <Grid item xs={12} md={6} sx={{ mb: 4 }}>
           <Typography variant="h6" gutterBottom sx={{ textAlign: 'center' }}>
             Movimentações de Stock Recentes (Últimos 30 Dias)
           </Typography>
@@ -245,7 +245,7 @@ const StockAlertsChart = () => {
         </Grid>
 
          {/* Vendas por Categoria */}
-         <Grid item xs={12} md={6}>
+         <Grid item xs={12} md={12}>
           <Typography variant="h6" gutterBottom sx={{ textAlign: 'center' }}>
             Vendas por Categoria (Top 5)
           </Typography>

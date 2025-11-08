@@ -39,7 +39,11 @@ export default function DashboardPage() {
         </Typography>
         
         {userRole === UserRole.ADMIN ? (
-          <SalesChart />
+          <>
+            <SalesChart />
+            <Box sx={{ my: 4 }} />
+            <StockAlertsChart />
+          </>
         ) : (
           <StockAlertsChart />
         )}
