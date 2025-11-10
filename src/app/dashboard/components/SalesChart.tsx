@@ -20,12 +20,12 @@ const CustomTooltip = ({ active, payload, label }: any) => {
   const theme = useTheme();
   if (active && payload && payload.length) {
     return (
-      <Paper elevation={3} sx={{ padding: '10px', backgroundColor: 'rgba(51, 184, 202, 0.9)' }}>
-        <Typography variant="subtitle2" gutterBottom>{`Mês: ${label}`}</Typography>
-        <Typography variant="body2" sx={{ color: theme.palette.secondary.main }}>
+      <Paper elevation={3} sx={{ padding: '10px', backgroundColor: 'rgba(86, 51, 202, 0.9)' }}>
+        <Typography variant="subtitle2" gutterBottom sx={{ color: '#fff' }}>{`Mês: ${label}`}</Typography>
+        <Typography variant="body2" sx={{ color: '#fff' }}>
           {`Vendas: ${formatCurrency(payload[0].value)}`}
         </Typography>
-        <Typography variant="body2" sx={{ color: theme.palette.primary.main }}>
+        <Typography variant="body2" sx={{ color: '#fff' }}>
           {`Lucro: ${formatCurrency(payload[1].value)}`}
         </Typography>
       </Paper>

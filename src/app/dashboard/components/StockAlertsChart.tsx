@@ -156,7 +156,7 @@ const StockAlertsChart = () => {
                   <CartesianGrid strokeDasharray="3 3" vertical={false} />
                   <XAxis dataKey="name" stroke="#666" tick={{ fill: '#666' }} />
                   <YAxis stroke="#666" tick={{ fill: '#666' }} />
-                  <Tooltip cursor={{fill: 'rgba(0,0,0,0.05)'}} />
+                  <Tooltip cursor={{fill: 'rgba(0,0,0,0.05)'}} contentStyle={{ backgroundColor: 'rgba(86, 51, 202, 0.9)', border: 'none', color: '#fff' }} itemStyle={{ color: '#fff' }} />
                   <Legend verticalAlign="top" height={36} />
                   <Bar dataKey="Quantidade" fill={theme.palette.error.main} radius={[4, 4, 0, 0]} />
                 </BarChart>
@@ -181,7 +181,7 @@ const StockAlertsChart = () => {
                   <CartesianGrid strokeDasharray="3 3" vertical={false} />
                   <XAxis dataKey="name" stroke="#666" tick={{ fill: '#666' }} />
                   <YAxis stroke="#666" tick={{ fill: '#666' }} />
-                  <Tooltip cursor={{fill: 'rgba(0,0,0,0.05)'}} />
+                  <Tooltip cursor={{fill: 'rgba(0,0,0,0.05)'}} contentStyle={{ backgroundColor: 'rgba(86, 51, 202, 0.9)', border: 'none', color: '#fff' }} itemStyle={{ color: '#fff' }} />
                   <Legend verticalAlign="top" height={36} />
                   <Bar dataKey="Dias para Expirar" fill={theme.palette.warning.main} radius={[4, 4, 0, 0]} />
                 </BarChart>
@@ -206,7 +206,7 @@ const StockAlertsChart = () => {
                   <CartesianGrid strokeDasharray="3 3" vertical={false} />
                   <XAxis dataKey="name" stroke="#666" tick={{ fill: '#666' }} />
                   <YAxis stroke="#666" tick={{ fill: '#666' }} />
-                  <Tooltip cursor={{fill: 'rgba(0,0,0,0.05)'}} />
+                  <Tooltip cursor={{fill: 'rgba(0,0,0,0.05)'}} contentStyle={{ backgroundColor: 'rgba(86, 51, 202, 0.9)', border: 'none', color: '#fff' }} itemStyle={{ color: '#fff' }} />
                   <Legend verticalAlign="top" height={36} />
                   <Bar dataKey="Quantidade Vendida" fill={theme.palette.success.main} radius={[4, 4, 0, 0]} />
                 </BarChart>
@@ -231,7 +231,7 @@ const StockAlertsChart = () => {
                   <CartesianGrid strokeDasharray="3 3" vertical={false} />
                   <XAxis dataKey="name" stroke="#666" tick={{ fill: '#666' }} />
                   <YAxis stroke="#666" tick={{ fill: '#666' }} />
-                  <Tooltip cursor={{fill: 'rgba(0,0,0,0.05)'}} />
+                  <Tooltip cursor={{fill: 'rgba(0,0,0,0.05)'}} contentStyle={{ backgroundColor: 'rgba(86, 51, 202, 0.9)', border: 'none', color: '#fff' }} itemStyle={{ color: '#fff' }} />
                   <Legend verticalAlign="top" height={36} />
                   <Bar dataKey="Mudança Líquida" fill={theme.palette.info.main} radius={[4, 4, 0, 0]} />
                 </BarChart>
@@ -256,7 +256,7 @@ const StockAlertsChart = () => {
                   <CartesianGrid strokeDasharray="3 3" vertical={false} />
                   <XAxis dataKey="name" stroke="#666" tick={{ fill: '#666' }} />
                   <YAxis stroke="#666" tick={{ fill: '#666' }} />
-                  <Tooltip cursor={{fill: 'rgba(0,0,0,0.05)'}} />
+                  <Tooltip cursor={{fill: 'rgba(0,0,0,0.05)'}} contentStyle={{ backgroundColor: 'rgba(86, 51, 202, 0.9)', border: 'none', color: '#fff' }} itemStyle={{ color: '#fff' }} />
                   <Legend verticalAlign="top" height={36} />
                   <Bar dataKey="Total de Vendas" fill={theme.palette.secondary.main} radius={[4, 4, 0, 0]} />
                 </BarChart>
