@@ -29,6 +29,11 @@ export const authOptions: AuthOptions = {
           return null;
         }
 
+        // Add check for isActive status
+        if (!user.isActive) {
+          return null;
+        }
+
         const isPasswordValid = await bcrypt.compare(credentials.password, user.password);
 
         if (!isPasswordValid) {

@@ -32,7 +32,7 @@ export default function LoginPage() {
     });
 
     if (result?.error) {
-      setError('Credenciais inválidas. Verifique o email e a senha.');
+      setError('A sua conta foi deativada. para voltar a entrar, fale com o Admin.');
     } else if (result?.ok) {
       router.push('/dashboard');
     }

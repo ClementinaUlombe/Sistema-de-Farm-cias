@@ -91,9 +91,17 @@ export async function PUT(req: Request, { params }: RouteParams) {
 }
 
 // DELETE: Deactivate a user
-export async function DELETE(req: Request, { params }: RouteParams) {
+export async function DELETE(req: Request, context: { params: { id: string } }) {
   const session = await getServerSession(authOptions);
-  const { id } = params;
+  // const id = context.params.id; // This is currently undefined
+
+  // Extract ID directly from the URL as a workaround
+  const urlParts = req.url.split('/');
+  const id = urlParts[urlParts.length - 1]; // The last part of the URL should be the ID
+
+  if (!id) {
+    return new NextResponse(JSON.stringify({ error: 'ID do utilizador em falta na requisição (URL parsing falhou).' }), { status: 400 });
+  }
 
   if (session?.user?.role !== UserRole.ADMIN) {
     return new NextResponse(JSON.stringify({ error: 'Acesso não autorizado' }), { status: 403 });
@@ -116,20 +124,27 @@ export async function DELETE(req: Request, { params }: RouteParams) {
       data: { isActive: false },
     });
 
-    // Log the action
-    await prisma.log.create({
-      data: {
-        actorId: session.user.id,
-        actorName: session.user.name!,
-        action: 'USER_DEACTIVATED',
-        targetId: userToDeactivate.id,
-        details: { name: userToDeactivate.name, email: userToDeactivate.email },
-      }
-    });
+    // Log the action (temporarily commented out for debugging)
+    /*
+    try {
+      await prisma.log.create({
+        data: {
+          actorId: session.user.id,
+          actorName: session.user.name!,
+          action: 'USER_DEACTIVATED',
+          targetId: userToDeactivate.id,
+          details: { name: userToDeactivate.name, email: userToDeactivate.email },
+        }
+      });
+    } catch (logError) {
+      console.error("Erro ao criar log de desativação de utilizador:", logError);
+      // Do not re-throw, as the user deactivation itself might have succeeded
+    }
+    */
 
     return new NextResponse(null, { status: 204 }); // No Content
   } catch (error) {
     console.error(error);
-    return new NextResponse(JSON.stringify({ error: 'Erro ao apagar utilizador' }), { status: 500 });
+    return new NextResponse(JSON.stringify({ error: 'Erro ao apagar utilizador', details: (error as Error).message || 'Erro desconhecido' }), { status: 500 });
   }
 }
