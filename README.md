@@ -8,11 +8,14 @@ Este é um sistema web completo para gestão de uma farmácia, desenvolvido com 
 
 ### 1. Gestão de Acessos e Perfis
 *   **Sistema de Login Seguro:** Autenticação baseada em perfis (Administrador, Atendente, Stockista).
-*   **Gestão de Utilizadores (Admin):** O Administrador pode criar, editar e apagar outros utilizadores.
+*   **Gestão de Utilizadores (Admin):** O Administrador pode criar, editar, desativar e reativar outros utilizadores.
+    *   **Validação de Dados:** Validação robusta no servidor e no cliente para campos como nome, email, senha (força), e perfil.
+    *   **Contas Desativadas:** Utilizadores desativados não conseguem iniciar sessão.
 *   **Controlo de Acesso:** Cada página e funcionalidade é estritamente controlada pelo perfil do utilizador logado.
 
 ### 2. Gestão de Produtos
 *   **CRUD de Produtos:** Interface completa para Criar, Ler, Atualizar e Apagar produtos.
+    *   **Validação de Dados:** Validação abrangente no servidor e no cliente para campos como nome, categoria, preços, quantidades, data de validade e código de barras.
 *   **Campos Detalhados:** O sistema regista preço de compra/venda, data de validade, stock mínimo, etc.
 *   **Auditoria de Stock:** O histórico de cada alteração de stock (seja por venda ou ajuste manual) é gravado.
 *   **Leitor de Código de Barras:** Suporte para leitura de códigos de barras na interface de vendas.
@@ -25,16 +28,43 @@ Este é um sistema web completo para gestão de uma farmácia, desenvolvido com 
 *   **Emissão de Recibo/Factura:** Geração de um recibo detalhado no final de cada venda, com opção de impressão.
 
 ### 4. Relatórios
+*   **Painel de Alertas e Relatórios de Stock (Disponível para Admin, Atendente, Stockista):**
+    *   **Produtos com Stock Baixo:** Gráfico detalhado mostrando produtos específicos e suas quantidades.
+    *   **Produtos Próximos da Validade:** Gráfico detalhado mostrando produtos específicos e dias restantes para expirar.
+    *   **Produtos Mais Vendidos (Top 5):** Gráfico dos 5 produtos com maior volume de vendas.
+    *   **Movimentações de Stock Recentes (Últimos 30 Dias):** Gráfico mostrando o balanço de stock dos produtos.
+    *   **Vendas por Categoria (Top 5):** Gráfico das 5 categorias que geraram mais vendas.
+    *   **Visualização:** Todos os gráficos possuem tooltips com a cor `rgba(86, 51, 202, 0.9)` para melhor visibilidade.
 *   **Para o Admin:**
     *   Relatório de Vendas e Lucro com filtro por data.
     *   Relatório de Vendas por Funcionário.
-    *   Relatório de Alertas de Stock Baixo.
-    *   Relatório de Alertas de Produtos Próximos da Validade.
-    *   Relatório completo de Histórico de Movimentação de Stock (agora exibido por padrão).
+    *   **Todos os gráficos do Painel de Alertas e Relatórios de Stock** (exibidos abaixo da análise de vendas e lucros).
 *   **Para o Atendente:**
-    *   Relatório individual das suas próprias vendas, com filtro por data (agora exibido por padrão).
+    *   Relatório individual das suas próprias vendas, com filtro por data.
+    *   **Painel de Alertas e Relatórios de Stock.**
 *   **Para o Stockista:**
-    *   Acesso ao relatório de Histórico de Movimentação de Stock (agora exibido por padrão).
+    *   Acesso ao relatório de Histórico de Movimentação de Stock.
+    *   **Painel de Alertas e Relatórios de Stock.**
+
+---
+
+## Tecnologias Utilizadas
+
+*   **Frontend:**
+    *   [Next.js](https://nextjs.org/) (Framework React)
+    *   [React](https://react.dev/) (Biblioteca JavaScript para UI)
+    *   [Material-UI (MUI)](https://mui.com/) (Biblioteca de componentes React para design)
+    *   [recharts](https://recharts.org/) (Biblioteca de gráficos React)
+    *   [TypeScript](https://www.typescriptlang.org/) (Superset de JavaScript tipado)
+*   **Backend:**
+    *   [Next.js API Routes](https://nextjs.org/docs/app/building-your-application/routing/api-routes)
+    *   [Prisma](https://www.prisma.io/) (ORM - Object-Relational Mapper)
+    *   [SQLite](https://www.sqlite.org/index.html) (Banco de dados leve para desenvolvimento/testes)
+    *   [bcrypt](https://www.npmjs.com/package/bcrypt) (Para hash de senhas)
+    *   [NextAuth.js](https://next-auth.js.org/) (Autenticação)
+*   **Ferramentas de Desenvolvimento:**
+    *   [ESLint](https://eslint.org/) (Linter para código JavaScript/TypeScript)
+    *   [Git](https://git-scm.com/) (Sistema de controlo de versão)
 
 ---
 
@@ -81,7 +111,7 @@ Certifique-se de ter o seguinte software instalado em sua máquina:
 5.  **Execute as migrações da base de dados:**
     Isso criará as tabelas necessárias no seu banco de dados.
     ```bash
-    npx prisma migrate dev --name init
+    npx prisma migrate dev
     ```
     *Nota: Se você já tem migrações existentes, pode precisar ajustar o comando ou apenas rodar `npx prisma migrate deploy` em produção.*
 
@@ -105,21 +135,21 @@ Abra o seu navegador e aceda a `http://localhost:3000`.
     *   **Senha:** `admin123`
 
 *   **Como Administrador:**
-    1.  **Crie Utilizadores:** Vá a **"Gerir Utilizadores"** para criar as contas dos seus Atendentes e Stockistas.
-    2.  **Cadastre Produtos:** Vá a **"Gerir Produtos"** para adicionar o seu inventário inicial.
-    3.  **Explore Relatórios:** Navegue por **"Relatórios Gerais"** para ter uma visão completa do negócio.
+    1.  **Crie Utilizadores:** Vá a **"Gestão de Utilizadores"** para criar, editar, desativar e reativar contas.
+    2.  **Cadastre Produtos:** Vá a **"Gestão de Produtos"** para adicionar e gerir o seu inventário.
+    3.  **Explore Relatórios:** Navegue por **"Relatórios Gerais"** e o **"Painel de Alertas e Relatórios de Stock"** para ter uma visão completa do negócio.
 
 *   **Como Atendente:**
     1.  Faça login com a conta criada pelo Admin.
     2.  Clique em **"Nova Venda"** para aceder ao Ponto de Venda.
     3.  Use a pesquisa para adicionar produtos, ajuste o carrinho e finalize a venda.
     4.  No final, pode imprimir o recibo para o cliente.
-    5.  Clique em **"Os Meus Relatórios"** para ver o seu desempenho.
+    5.  Clique em **"Os Meus Relatórios"** para ver o seu desempenho e aceda ao **"Painel de Alertas e Relatórios de Stock"**.
 
 *   **Como Stockista:**
     1.  Faça login com a conta criada pelo Admin.
-    2.  Vá a **"Gerir Produtos"** para adicionar novos produtos ou atualizar as quantidades e detalhes dos existentes.
-    3.  Clique em **"Histórico de Stock"** para auditar todas as movimentações.
+    2.  Vá a **"Gestão de Produtos"** para adicionar novos produtos ou atualizar as quantidades e detalhes dos existentes.
+    3.  Clique em **"Histórico de Stock"** para auditar todas as movimentações e aceda ao **"Painel de Alertas e Relatórios de Stock"**.
 
 ---
 
@@ -128,3 +158,6 @@ Abra o seu navegador e aceda a `http://localhost:3000`.
 *   **Recuperação de Senha:** Implementar um sistema de "Esqueci a minha senha".
 *   **Melhorias na Interface:** Adicionar um modo Dark/Light.
 *   **Documentação de API e Backups:** Criar tarefas de manutenção e documentação técnica.
+*   **Integração de Pagamentos:** Adicionar opções de pagamento online.
+*   **Gestão de Fornecedores:** Módulo para gerir fornecedores e pedidos de compra.
+*   **Relatórios Avançados:** Mais opções de filtros e visualizações para relatórios.
