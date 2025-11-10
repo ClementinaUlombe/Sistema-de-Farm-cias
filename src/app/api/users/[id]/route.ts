@@ -13,11 +13,9 @@ interface RouteParams {
 // PUT: Update a user
 export async function PUT(req: Request, context: { params: { id: string } }) {
   const session = await getServerSession(authOptions);
-  // const { id } = params; // Original destructuring
-
   // Extract ID directly from the URL as a workaround
   const urlParts = req.url.split('/');
-  const id = urlParts[urlParts.length - 1]; // The last part of the URL should be the ID
+  const id = urlParts[urlParts.length - 1];
 
   if (!id) {
     return new NextResponse(JSON.stringify({ error: 'ID do utilizador em falta na requisição (URL parsing falhou).' }), { status: 400 });
@@ -30,11 +28,6 @@ export async function PUT(req: Request, context: { params: { id: string } }) {
   try {
     const { name, email, role, password, isActive } = await req.json();
 
-    // Basic validation for required fields when not just changing status
-    if (!name || !email || !role) {
-      return new NextResponse(JSON.stringify({ error: 'Nome, email e perfil são obrigatórios' }), { status: 400 });
-    }
-
     const existingUser = await prisma.user.findUnique({
       where: { id },
     });
@@ -43,33 +36,75 @@ export async function PUT(req: Request, context: { params: { id: string } }) {
       return new NextResponse(JSON.stringify({ error: 'Utilizador não encontrado' }), { status: 404 });
     }
 
-    // Check if email is already in use by another user
-    if (email && email !== existingUser.email) {
-      const userWithSameEmail = await prisma.user.findUnique({
-        where: { email },
-      });
-      if (userWithSameEmail) {
-        return new NextResponse(JSON.stringify({ error: 'Este email já está em uso.' }), { status: 409 });
+    const dataToUpdate: any = {};
+
+    // Validate and add name to dataToUpdate if provided
+    if (name !== undefined) {
+      if (name.length < 2 || name.length > 50) {
+        return new NextResponse(JSON.stringify({ error: 'O nome deve ter entre 2 e 50 caracteres.' }), { status: 400 });
       }
+      dataToUpdate.name = name;
     }
 
-    // Prevent admin from changing their own role
-    if (session.user.id === id && role && session.user.role !== role) {
-        return new NextResponse(JSON.stringify({ error: 'Não pode alterar o seu próprio perfil.' }), { status: 403 });
+    // Validate and add email to dataToUpdate if provided
+    if (email !== undefined) {
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(email)) {
+        return new NextResponse(JSON.stringify({ error: 'Formato de email inválido.' }), { status: 400 });
+      }
+      // Check if email is already in use by another user
+      if (email !== existingUser.email) {
+        const userWithSameEmail = await prisma.user.findUnique({
+          where: { email },
+        });
+        if (userWithSameEmail) {
+          return new NextResponse(JSON.stringify({ error: 'Este email já está em uso.' }), { status: 409 });
+        }
+      }
+      dataToUpdate.email = email;
     }
 
-    const dataToUpdate: any = {
-      name,
-      email,
-      role,
-    };
+    // Validate and add role to dataToUpdate if provided
+    if (role !== undefined) {
+      const validRoles = Object.values(UserRole);
+      if (!validRoles.includes(role)) {
+        return new NextResponse(JSON.stringify({ error: `Perfil de utilizador inválido. Os perfis permitidos são: ${validRoles.join(', ')}.` }), { status: 400 });
+      }
+      // Prevent admin from changing their own role
+      if (session.user.id === id && role !== existingUser.role) { // Compare with existingUser.role
+          return new NextResponse(JSON.stringify({ error: 'Não pode alterar o seu seu próprio perfil.' }), { status: 403 });
+      }
+      dataToUpdate.role = role;
+    }
 
-    if (password && password.length > 0) {
+    // Validate and add password to dataToUpdate if provided
+    if (password !== undefined && password.length > 0) {
+      if (password.length < 8) {
+        return new NextResponse(JSON.stringify({ error: 'A palavra-passe deve ter pelo menos 8 caracteres.' }), { status: 400 });
+      }
+      if (!/[A-Z]/.test(password)) {
+        return new NextResponse(JSON.stringify({ error: 'A palavra-passe deve conter pelo menos uma letra maiúscula.' }), { status: 400 });
+      }
+      if (!/[a-z]/.test(password)) {
+        return new NextResponse(JSON.stringify({ error: 'A palavra-passe deve conter pelo menos uma letra minúscula.' }), { status: 400 });
+      }
+      if (!/[0-9]/.test(password)) {
+        return new NextResponse(JSON.stringify({ error: 'A palavra-passe deve conter pelo menos um número.' }), { status: 400 });
+      }
+      if (!/[^A-Za-z0-9]/.test(password)) {
+        return new NextResponse(JSON.stringify({ error: 'A palavra-passe deve conter pelo menos um caractere especial.' }), { status: 400 });
+      }
       dataToUpdate.password = await hash(password, 12);
     }
 
+    // Add isActive to dataToUpdate if provided
     if (isActive !== undefined) {
       dataToUpdate.isActive = isActive;
+    }
+
+    // If no fields are provided for update, return 400
+    if (Object.keys(dataToUpdate).length === 0) {
+        return new NextResponse(JSON.stringify({ error: 'Nenhum campo fornecido para atualização.' }), { status: 400 });
     }
 
     const updatedUser = await prisma.user.update({

@@ -47,8 +47,43 @@ export async function POST(req: Request) {
   try {
     const { name, email, password, role } = await req.json();
 
+    // 1. Basic presence validation
     if (!name || !email || !password || !role) {
       return new NextResponse(JSON.stringify({ error: 'Campos obrigatórios em falta' }), { status: 400 });
+    }
+
+    // 2. Email format validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      return new NextResponse(JSON.stringify({ error: 'Formato de email inválido.' }), { status: 400 });
+    }
+
+    // 3. Password strength validation
+    if (password.length < 8) {
+      return new NextResponse(JSON.stringify({ error: 'A palavra-passe deve ter pelo menos 8 caracteres.' }), { status: 400 });
+    }
+    if (!/[A-Z]/.test(password)) {
+      return new NextResponse(JSON.stringify({ error: 'A palavra-passe deve conter pelo menos uma letra maiúscula.' }), { status: 400 });
+    }
+    if (!/[a-z]/.test(password)) {
+      return new NextResponse(JSON.stringify({ error: 'A palavra-passe deve conter pelo menos uma letra minúscula.' }), { status: 400 });
+    }
+    if (!/[0-9]/.test(password)) {
+      return new NextResponse(JSON.stringify({ error: 'A palavra-passe deve conter pelo menos um número.' }), { status: 400 });
+    }
+    if (!/[^A-Za-z0-9]/.test(password)) {
+      return new NextResponse(JSON.stringify({ error: 'A palavra-passe deve conter pelo menos um caractere especial.' }), { status: 400 });
+    }
+
+    // 4. Name length validation
+    if (name.length < 2 || name.length > 50) {
+        return new NextResponse(JSON.stringify({ error: 'O nome deve ter entre 2 e 50 caracteres.' }), { status: 400 });
+    }
+
+    // 5. Role validation (ensure it's a valid UserRole enum value)
+    const validRoles = Object.values(UserRole);
+    if (!validRoles.includes(role)) {
+        return new NextResponse(JSON.stringify({ error: `Perfil de utilizador inválido. Os perfis permitidos são: ${validRoles.join(', ')}.` }), { status: 400 });
     }
 
     // Check if user already exists
