@@ -112,7 +112,7 @@ export default function SalesPage() {
   };
 
   if (loading || status === 'loading') return <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}><CircularProgress /></Box>;
-  if (![UserRole.ADMIN, UserRole.ATTENDANT].includes(session?.user?.role as UserRole)) return (
+  if (!([UserRole.ADMIN, UserRole.ATTENDANT] as UserRole[]).includes(session?.user?.role as UserRole)) return (
     <FeedbackModal
       open={accessDeniedModalOpen}
       message="Acesso Negado. Você não tem permissão para acessar esta página."
