@@ -6,20 +6,12 @@ import { hash } from 'bcrypt';
 
 const prisma = new PrismaClient();
 
-interface RouteParams {
-  params: { id: string };
-}
+
 
 // PUT: Update a user
 export async function PUT(req: Request, context: { params: { id: string } }) {
   const session = await getServerSession(authOptions);
-  // Extract ID directly from the URL as a workaround
-  const urlParts = req.url.split('/');
-  const id = urlParts[urlParts.length - 1];
-
-  if (!id) {
-    return new NextResponse(JSON.stringify({ error: 'ID do utilizador em falta na requisição (URL parsing falhou).' }), { status: 400 });
-  }
+  const id = context.params.id;
 
   if (session?.user?.role !== UserRole.ADMIN) {
     return new NextResponse(JSON.stringify({ error: 'Acesso não autorizado' }), { status: 403 });
@@ -136,15 +128,7 @@ export async function PUT(req: Request, context: { params: { id: string } }) {
 // DELETE: Deactivate a user
 export async function DELETE(req: Request, context: { params: { id: string } }) {
   const session = await getServerSession(authOptions);
-  // const id = context.params.id; // This is currently undefined
-
-  // Extract ID directly from the URL as a workaround
-  const urlParts = req.url.split('/');
-  const id = urlParts[urlParts.length - 1]; // The last part of the URL should be the ID
-
-  if (!id) {
-    return new NextResponse(JSON.stringify({ error: 'ID do utilizador em falta na requisição (URL parsing falhou).' }), { status: 400 });
-  }
+  const id = context.params.id;
 
   if (session?.user?.role !== UserRole.ADMIN) {
     return new NextResponse(JSON.stringify({ error: 'Acesso não autorizado' }), { status: 403 });

@@ -5,14 +5,12 @@ import { PrismaClient, UserRole } from '@prisma/client';
 
 const prisma = new PrismaClient();
 
-interface RouteParams {
-  params: { id: string };
-}
+
 
 // PUT: Update a product and log stock changes
-export async function PUT(req: Request, { params }: RouteParams) {
+export async function PUT(req: Request, context: { params: { id: string } }) {
   const session = await getServerSession(authOptions);
-  const { id } = params;
+  const id = context.params.id;
 
   if (!session || !session.user || ![UserRole.ADMIN, UserRole.STOCKIST].includes(session.user.role as UserRole)) {
     return new NextResponse(JSON.stringify({ error: 'Acesso não autorizado' }), { status: 403 });
@@ -161,9 +159,9 @@ export async function PUT(req: Request, { params }: RouteParams) {
   }
 }
 // DELETE: Delete a product
-export async function DELETE(req: Request, { params }: RouteParams) {
+export async function DELETE(req: Request, context: { params: { id: string } }) {
   const session = await getServerSession(authOptions);
-  const { id } = params;
+  const id = context.params.id;
 
   if (!session || !session.user || ![UserRole.ADMIN, UserRole.STOCKIST].includes(session.user.role as UserRole)) {
     return new NextResponse(JSON.stringify({ error: 'Acesso não autorizado' }), { status: 403 });
