@@ -94,7 +94,7 @@ export default function UsersPage() {
   
       }
   
-      setFormErrors(prev => ({ ...prev, [name]: error }));
+      setFormErrors((prev: any) => ({ ...prev, [name]: error }));
   
       return error;
   
