@@ -1,7 +1,7 @@
 'use client';
 
 import { useSession, signOut } from 'next-auth/react';
-import { useRouter } from 'next/navigation';
+import { useRouter, usePathname } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { Box, Typography, Button, CircularProgress, List, ListItem, ListItemButton, ListItemIcon, ListItemText, Collapse } from '@mui/material';
@@ -24,6 +24,7 @@ import ThemeSwitcher from '../components/ThemeSwitcher';
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   const { data: session, status } = useSession();
   const router = useRouter();
+  const pathname = usePathname();
   const [auditoriaOpen, setAuditoriaOpen] = useState(false);
   const theme = useTheme(); // Use theme
   const themeMode = theme.palette.mode; // Get theme mode
@@ -44,7 +45,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
   if (status === 'authenticated') {
     const userRole = session.user?.role as UserRole;
-    const isActive = (href: string) => router.pathname === href; // Helper function for active state
+    const isActive = (href: string) => pathname === href; // Helper function for active state
 
     const handleAuditoriaClick = () => {
       setAuditoriaOpen(!auditoriaOpen);
