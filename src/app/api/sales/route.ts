@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth/next';
 import { authOptions } from '@/app/api/auth/[...nextauth]/route';
 import { PrismaClient, UserRole } from '@prisma/client';
-import { zonedTimeToUtc, toZonedTime, format } from 'date-fns-tz';
+import { fromZonedTime, toZonedTime, format } from 'date-fns-tz';
 import { ptBR } from 'date-fns/locale';
 
 
