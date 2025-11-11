@@ -72,8 +72,7 @@ export default function ReportsPage() {
       <Typography component="h2" variant="h5" gutterBottom sx={{ mt: 4 }}>Relatórios de Alertas</Typography>
       <Grid container spacing={4} sx={{ mt: 1 }}>
         {/* Low Stock Report */}
-        <Grid item xs={12} md={6}>
-          <Typography component="h3" variant="h6" gutterBottom>Produtos com Stock Baixo</Typography>
+        <Grid size={{ xs: 12, md: 6 }}>
           <TableContainer component={Paper}>
             <Table>
               <TableHead><TableRow><TableCell>Produto</TableCell><TableCell align="right">Stock Atual</TableCell><TableCell align="right">Stock Mínimo</TableCell></TableRow></TableHead>
@@ -91,7 +90,7 @@ export default function ReportsPage() {
         </Grid>
 
         {/* Near Expiry Report */}
-        <Grid item xs={12} md={6}>
+        <Grid size={{ xs: 12, md: 6 }}>
           <Typography component="h3" variant="h6" gutterBottom>Produtos Próximos da Validade</Typography>
           <TableContainer component={Paper}>
             <Table>
