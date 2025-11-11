@@ -69,7 +69,7 @@ export default function StockHistoryPage() {
   const userRole = session?.user?.role as UserRole;
 
   if (status === 'loading') return <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}><CircularProgress /></Box>;
-  if (![UserRole.ADMIN, UserRole.STOCKIST].includes(userRole)) return <Container><Alert severity="error" sx={{ mt: 4 }}>Acesso Negado.</Alert></Container>;
+  if (!([UserRole.ADMIN, UserRole.STOCKIST] as UserRole[]).includes(userRole)) return <Container><Alert severity="error" sx={{ mt: 4 }}>Acesso Negado.</Alert></Container>;
 
   return (
     <Container maxWidth="xl" sx={{ mt: 4, mb: 4 }}>
@@ -77,9 +77,9 @@ export default function StockHistoryPage() {
       
       <Paper sx={{ p: 2, mb: 4 }}>
         <Grid container spacing={2} alignItems="center">
-          <Grid item xs={12} sm={3}><TextField name="from" label="De" type="date" value={filters.from} onChange={handleFilterChange} fullWidth InputLabelProps={{ shrink: true }} /></Grid>
-          <Grid item xs={12} sm={3}><TextField name="to" label="Até" type="date" value={filters.to} onChange={handleFilterChange} fullWidth InputLabelProps={{ shrink: true }} /></Grid>
-          <Grid item xs={12} sm={4}>
+          <Grid size={{ xs: 12, sm: 3 }}><TextField name="from" label="De" type="date" value={filters.from} onChange={handleFilterChange} fullWidth InputLabelProps={{ shrink: true }} /></Grid>
+          <Grid size={{ xs: 12, sm: 3 }}><TextField name="to" label="Até" type="date" value={filters.to} onChange={handleFilterChange} fullWidth InputLabelProps={{ shrink: true }} /></Grid>
+          <Grid size={{ xs: 12, sm: 4 }}>
             <Autocomplete
               options={products}
               getOptionLabel={(option) => option.name}
@@ -87,7 +87,7 @@ export default function StockHistoryPage() {
               renderInput={(params) => <TextField {...params} label="Filtrar por Produto" />}
             />
           </Grid>
-          <Grid item xs={12} sm={2}><Button variant="contained" onClick={generateReport} disabled={loading} fullWidth>{loading ? 'Gerando...' : 'Gerar'}</Button></Grid>
+          <Grid size={{ xs: 12, sm: 2 }}><Button variant="contained" onClick={generateReport} disabled={loading} fullWidth>{loading ? 'Gerando...' : 'Gerar'}</Button></Grid>
         </Grid>
       </Paper>
 
