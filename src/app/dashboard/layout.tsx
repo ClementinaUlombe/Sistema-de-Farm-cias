@@ -79,7 +79,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             Olá, {session.user?.name}!
           </Typography>
           <List sx={{ width: '100%', maxWidth: 360, bgcolor: 'transparent' }}> {/* Transparent background for List */}
-            {[UserRole.ADMIN, UserRole.ATTENDANT].includes(userRole) && (
+            {([UserRole.ADMIN, UserRole.ATTENDANT] as UserRole[]).includes(userRole) && (
               <Link href="/dashboard/sales" passHref>
                 <ListItem disablePadding>
                   <ListItemButton
@@ -101,7 +101,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
               </Link>
             )}
 
-            {[UserRole.ADMIN, UserRole.STOCKIST].includes(userRole) && (
+            {([UserRole.ADMIN, UserRole.STOCKIST] as UserRole[]).includes(userRole) && (
               <>
                 <Link href="/dashboard/products" passHref>
                   <ListItem disablePadding>
@@ -144,7 +144,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
               </>
             )}
             
-            {[UserRole.ADMIN, UserRole.ATTENDANT].includes(userRole) && (
+            {([UserRole.ADMIN, UserRole.ATTENDANT] as UserRole[]).includes(userRole) && (
                 <Link href="/dashboard/my-reports" passHref>
                   <ListItem disablePadding>
                     <ListItemButton

@@ -72,7 +72,7 @@ export default function ProductsPage() {
     if (status === 'unauthenticated') router.push('/login');
     if (status === 'authenticated') {
       const userRole = session.user?.role as UserRole;
-      if (![UserRole.ADMIN, UserRole.STOCKIST].includes(userRole)) {
+      if (!([UserRole.ADMIN, UserRole.STOCKIST] as UserRole[]).includes(userRole)) {
         setLoading(false);
         setFeedbackModalState({
           open: true,
@@ -138,7 +138,7 @@ export default function ProductsPage() {
       default:
         break;
     }
-    setFormErrors(prev => ({ ...prev, [name]: error }));
+    setFormErrors((prev: any) => ({ ...prev, [name]: error }));
     return error;
   };
 
@@ -299,7 +299,7 @@ export default function ProductsPage() {
         <DialogTitle>{editingProduct ? 'Editar Produto' : 'Adicionar Novo Produto'}</DialogTitle>
         <DialogContent>
           <Grid container spacing={2} sx={{ mt: 1 }}>
-            <Grid item xs={12} sm={6}>
+            <Grid size={{ xs: 12, sm: 6 }}>
               <TextField
                 label="Nome do Produto"
                 name="name"
@@ -312,7 +312,7 @@ export default function ProductsPage() {
                 placeholder="Ex: Paracetamol 500mg"
               />
             </Grid>
-            <Grid item xs={12} sm={6}>
+            <Grid size={{ xs: 12, sm: 6 }}>
               <TextField
                 label="Categoria"
                 name="category"
@@ -325,7 +325,7 @@ export default function ProductsPage() {
                 placeholder="Ex: Analgésicos"
               />
             </Grid>
-            <Grid item xs={12} sm={6}>
+            <Grid size={{ xs: 12, sm: 6 }}>
               <TextField
                 label="Dosagem"
                 name="dosage"
@@ -337,7 +337,7 @@ export default function ProductsPage() {
                 placeholder="Ex: 500mg"
               />
             </Grid>
-            <Grid item xs={12} sm={6}>
+            <Grid size={{ xs: 12, sm: 6 }}>
               <TextField
                 label="Fabricante"
                 name="manufacturer"
@@ -349,7 +349,7 @@ export default function ProductsPage() {
                 placeholder="Ex: Pfizer"
               />
             </Grid>
-            <Grid item xs={12} sm={6}>
+            <Grid size={{ xs: 12, sm: 6 }}>
               <TextField
                 label="Preço de Compra"
                 name="purchasePrice"
@@ -363,7 +363,7 @@ export default function ProductsPage() {
                 placeholder="Ex: 150.00"
               />
             </Grid>
-            <Grid item xs={12} sm={6}>
+            <Grid size={{ xs: 12, sm: 6 }}>
               <TextField
                 label="Preço de Venda"
                 name="sellingPrice"
@@ -377,7 +377,7 @@ export default function ProductsPage() {
                 placeholder="Ex: 200.00"
               />
             </Grid>
-            <Grid item xs={12} sm={6}>
+            <Grid size={{ xs: 12, sm: 6 }}>
               <TextField
                 label="Quantidade em Stock"
                 name="stockQuantity"
@@ -391,7 +391,7 @@ export default function ProductsPage() {
                 placeholder="Ex: 100"
               />
             </Grid>
-            <Grid item xs={12} sm={6}>
+            <Grid size={{ xs: 12, sm: 6 }}>
               <TextField
                 label="Stock Mínimo"
                 name="minStockQuantity"
@@ -405,7 +405,7 @@ export default function ProductsPage() {
                 placeholder="Ex: 10"
               />
             </Grid>
-            <Grid item xs={12} sm={6}>
+            <Grid size={{ xs: 12, sm: 6 }}>
               <TextField
                 label="Data de Validade"
                 name="expiryDate"
@@ -420,7 +420,7 @@ export default function ProductsPage() {
                 placeholder="Ex: 2025-12-31"
               />
             </Grid>
-            <Grid item xs={12} sm={6}>
+            <Grid size={{ xs: 12, sm: 6 }}>
               <Box sx={{ display: 'flex', alignItems: 'flex-end', gap: 1 }}>
                 <TextField
                   label="Código de Barras (Opcional)"

@@ -46,7 +46,7 @@ export default function MyReportPage() {
   const userRole = session?.user?.role as UserRole;
 
   if (status === 'loading') return <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}><CircularProgress /></Box>;
-  if (![UserRole.ADMIN, UserRole.ATTENDANT].includes(userRole)) return <Container><Alert severity="error" sx={{ mt: 4 }}>Acesso Negado.</Alert></Container>;
+  if (!([UserRole.ADMIN, UserRole.ATTENDANT] as UserRole[]).includes(userRole)) return <Container><Alert severity="error" sx={{ mt: 4 }}>Acesso Negado.</Alert></Container>;
 
   return (
     <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
@@ -54,9 +54,9 @@ export default function MyReportPage() {
       
       <Paper sx={{ p: 2, mb: 4 }}>
         <Grid container spacing={2} alignItems="center">
-          <Grid item xs={12} sm={5}><TextField name="from" label="De" type="date" value={dates.from} onChange={handleDateChange} fullWidth InputLabelProps={{ shrink: true }} /></Grid>
-          <Grid item xs={12} sm={5}><TextField name="to" label="Até" type="date" value={dates.to} onChange={handleDateChange} fullWidth InputLabelProps={{ shrink: true }} /></Grid>
-          <Grid item xs={12} sm={2}><Button variant="contained" onClick={generateReport} disabled={loading} fullWidth>{loading ? 'Gerando...' : 'Gerar'}</Button></Grid>
+          <Grid size={{ xs: 12, sm: 5 }}><TextField name="from" label="De" type="date" value={dates.from} onChange={handleDateChange} fullWidth InputLabelProps={{ shrink: true }} /></Grid>
+          <Grid size={{ xs: 12, sm: 5 }}><TextField name="to" label="Até" type="date" value={dates.to} onChange={handleDateChange} fullWidth InputLabelProps={{ shrink: true }} /></Grid>
+          <Grid size={{ xs: 12, sm: 2 }}><Button variant="contained" onClick={generateReport} disabled={loading} fullWidth>{loading ? 'Gerando...' : 'Gerar'}</Button></Grid>
         </Grid>
       </Paper>
 
@@ -66,8 +66,8 @@ export default function MyReportPage() {
       {reportData && (
         <Box>
           <Grid container spacing={3} sx={{ mb: 4 }}>
-            <Grid item xs={12} sm={6}><Paper sx={{ p: 2, textAlign: 'center' }}><Typography variant="h6">Total Vendido</Typography><Typography variant="h4">{reportData.totalSalesValue.toFixed(2)} MT</Typography></Paper></Grid>
-            <Grid item xs={12} sm={6}><Paper sx={{ p: 2, textAlign: 'center' }}><Typography variant="h6">Nº de Vendas</Typography><Typography variant="h4">{reportData.saleCount}</Typography></Paper></Grid>
+            <Grid size={{ xs: 12, sm: 6 }}><Paper sx={{ p: 2, textAlign: 'center' }}><Typography variant="h6">Total Vendido</Typography><Typography variant="h4">{reportData.totalSalesValue.toFixed(2)} MT</Typography></Paper></Grid>
+            <Grid size={{ xs: 12, sm: 6 }}><Paper sx={{ p: 2, textAlign: 'center' }}><Typography variant="h6">Nº de Vendas</Typography><Typography variant="h4">{reportData.saleCount}</Typography></Paper></Grid>
           </Grid>
 
           <Typography component="h2" variant="h5" gutterBottom>Minhas Vendas Detalhadas</Typography>

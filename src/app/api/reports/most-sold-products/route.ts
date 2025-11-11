@@ -1,7 +1,7 @@
 // src/app/api/reports/most-sold-products/route.ts
 import { NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth/next';
-import { authOptions } from '@/app/api/auth/[...nextauth]/route';
+import { authOptions } from '@/lib/auth';
 import { PrismaClient, UserRole } from '@prisma/client';
 
 const prisma = new PrismaClient();
