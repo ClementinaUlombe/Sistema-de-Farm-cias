@@ -37,6 +37,7 @@ export default function UsersPage() {
   const [error, setError] = useState(''); // Keeping this for consistency, though feedbackModalState handles errors now
   
   const [formErrors, setFormErrors] = useState<any>({});
+  const [formState, setFormState] = useState(initialFormState);
   
   
   
