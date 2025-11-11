@@ -68,7 +68,7 @@ export async function GET() {
 export async function POST(req: Request) {
   const session = await getServerSession(authOptions);
 
-  if (!session || !session.user || ![UserRole.ADMIN, UserRole.ATTENDANT].includes(session.user.role as UserRole)) {
+  if (!session || !session.user || !([UserRole.ADMIN, UserRole.ATTENDANT] as UserRole[]).includes(session.user.role as UserRole)) {
     return new NextResponse(JSON.stringify({ error: 'Acesso não autorizado' }), { status: 403 });
   }
 
