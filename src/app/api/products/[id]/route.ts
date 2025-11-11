@@ -13,7 +13,7 @@ export async function PUT(req: Request, context: { params: Promise<{ id: string;
   const resolvedParams = await context.params;
   const id = resolvedParams.id;
 
-  if (!session || !session.user || ![UserRole.ADMIN, UserRole.STOCKIST].includes(session.user.role as UserRole)) {
+  if (!session || !session.user || !([UserRole.ADMIN, UserRole.STOCKIST] as UserRole[]).includes(session.user.role as UserRole)) {
     return new NextResponse(JSON.stringify({ error: 'Acesso não autorizado' }), { status: 403 });
   }
 
@@ -165,7 +165,7 @@ export async function DELETE(req: Request, context: { params: Promise<{ id: stri
   const resolvedParams = await context.params;
   const id = resolvedParams.id;
 
-  if (!session || !session.user || ![UserRole.ADMIN, UserRole.STOCKIST].includes(session.user.role as UserRole)) {
+  if (!session || !session.user || !([UserRole.ADMIN, UserRole.STOCKIST] as UserRole[]).includes(session.user.role as UserRole)) {
     return new NextResponse(JSON.stringify({ error: 'Acesso não autorizado' }), { status: 403 });
   }
 
