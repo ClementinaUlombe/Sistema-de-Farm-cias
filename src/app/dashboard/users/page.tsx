@@ -251,6 +251,22 @@ export default function UsersPage() {
     };
   
   
+  const fetchUsers = useCallback(async () => {
+    console.log("fetchUsers called");
+    try {
+      const res = await fetch('/api/users');
+      console.log("fetchUsers response received:", res.ok);
+      if (!res.ok) throw new Error((await res.json()).error || 'Falha ao carregar utilizadores');
+      setUsers(await res.json());
+      console.log("Users fetched successfully");
+    } catch (err: any) {
+      console.error("Error in fetchUsers:", err);
+      setFeedbackModalState({ open: true, message: err.message, severity: 'error' });
+    } finally {
+      console.log("fetchUsers finished");
+      setLoading(false);
+    }
+  }, []);
   
     if (loading || status === 'loading') return <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}><CircularProgress /></Box>;
   
