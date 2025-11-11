@@ -94,13 +94,13 @@ const SalesChart = () => {
       </Typography>
       
       <Grid container spacing={2} sx={{ marginBottom: '20px', textAlign: 'center' }}>
-        <Grid item xs={6}>
+        <Grid size={{ xs: 6 }}>
           <Typography variant="h6" color="textSecondary">Vendas Totais</Typography>
           <Typography variant="h4" sx={{ color: theme.palette.secondary.main, fontWeight: 'bold' }}>
             <AnimatedNumber value={totalSales} formatter={formatCurrency} />
           </Typography>
         </Grid>
-        <Grid item xs={6}>
+        <Grid size={{ xs: 6 }}>
           <Typography variant="h6" color="textSecondary">Lucro Total</Typography>
           <Typography variant="h4" sx={{ color: theme.palette.primary.main, fontWeight: 'bold' }}>
             <AnimatedNumber value={totalProfit} formatter={formatCurrency} />
