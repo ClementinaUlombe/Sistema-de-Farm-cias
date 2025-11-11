@@ -44,7 +44,7 @@ export default function SalesPage() {
   useEffect(() => {
     if (status === 'unauthenticated') router.push('/login');
     if (status === 'authenticated' && session.user?.role) {
-      if (![UserRole.ADMIN, UserRole.ATTENDANT].includes(session.user.role as UserRole)) {
+      if (!([UserRole.ADMIN, UserRole.ATTENDANT] as UserRole[]).includes(session.user.role as UserRole)) {
         setLoading(false);
         setAccessDeniedModalOpen(true);
         return;
