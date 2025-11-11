@@ -12,6 +12,7 @@
     "seed": "ts-node --compiler-options {\"module\":\"CommonJS\"} prisma/seed.ts"
   },
   "dependencies": {
+    "@date-fns/tz": "^1.4.1",
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.1",
     "@mui/icons-material": "^7.3.5",
@@ -20,7 +21,6 @@
     "@prisma/client": "^6.19.0",
     "bcrypt": "^6.0.0",
     "date-fns": "^4.1.0",
-    "date-fns-tz": "^3.2.0",
     "html5-qrcode": "^2.3.8",
     "jsonwebtoken": "^9.0.2",
     "next": "16.0.1",
