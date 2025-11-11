@@ -29,7 +29,7 @@ export async function GET(req: Request) {
 export async function POST(req: Request) {
   const session = await getServerSession(authOptions);
 
-  if (!session || !session.user || ![UserRole.ADMIN, UserRole.STOCKIST].includes(session.user.role as UserRole)) {
+  if (!session || !session.user || !([UserRole.ADMIN, UserRole.STOCKIST] as UserRole[]).includes(session.user.role as UserRole)) {
     return new NextResponse(JSON.stringify({ error: 'Acesso não autorizado' }), { status: 403 });
   }
 
