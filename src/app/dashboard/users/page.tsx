@@ -39,6 +39,10 @@ export default function UsersPage() {
   const [formErrors, setFormErrors] = useState<any>({});
   const [formState, setFormState] = useState(initialFormState);
   const [editingUser, setEditingUser] = useState<User | null>(null);
+  const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
+  const [userIdToDelete, setUserIdToDelete] = useState('');
+  const [modalOpen, setModalOpen] = useState(false);
+  const [feedbackModalState, setFeedbackModalState] = useState({ open: false, message: '', severity: 'success' as 'success' | 'error' });
   
   
   
