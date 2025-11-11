@@ -9,9 +9,10 @@ const prisma = new PrismaClient();
 
 
 // PUT: Update a user
-export async function PUT(req: Request, context: { params: { id: string } }) {
+export async function PUT(req: Request, context: { params: Promise<{ id: string; }> }) {
   const session = await getServerSession(authOptions);
-  const id = context.params.id;
+  const resolvedParams = await context.params;
+  const id = resolvedParams.id;
 
   if (session?.user?.role !== UserRole.ADMIN) {
     return new NextResponse(JSON.stringify({ error: 'Acesso não autorizado' }), { status: 403 });
@@ -126,9 +127,10 @@ export async function PUT(req: Request, context: { params: { id: string } }) {
 }
 
 // DELETE: Deactivate a user
-export async function DELETE(req: Request, context: { params: { id: string } }) {
+export async function DELETE(req: Request, context: { params: Promise<{ id: string; }> }) {
   const session = await getServerSession(authOptions);
-  const id = context.params.id;
+  const resolvedParams = await context.params;
+  const id = resolvedParams.id;
 
   if (session?.user?.role !== UserRole.ADMIN) {
     return new NextResponse(JSON.stringify({ error: 'Acesso não autorizado' }), { status: 403 });
