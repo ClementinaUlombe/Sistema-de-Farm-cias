@@ -38,6 +38,7 @@ export default function UsersPage() {
   
   const [formErrors, setFormErrors] = useState<any>({});
   const [formState, setFormState] = useState(initialFormState);
+  const [editingUser, setEditingUser] = useState<User | null>(null);
   
   
   
