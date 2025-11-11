@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth/next';
 import { authOptions } from '@/app/api/auth/[...nextauth]/route';
 import { PrismaClient, UserRole } from '@prisma/client';
-import { utcToZonedTime, formatInTimeZone } from '@date-fns/tz';
+import { zonedTimeToUtc, toZonedTime, format } from 'date-fns-tz';
 import { ptBR } from 'date-fns/locale';
 
 
@@ -38,8 +38,8 @@ export async function GET() {
 
     const monthlyData = saleItems.reduce((acc, item) => {
       const timeZone = 'America/Sao_Paulo'; 
-      const zonedDate = utcToZonedTime(item.sale.createdAt, timeZone);
-      const monthName = formatInTimeZone(zonedDate, timeZone, 'MMM', { locale: ptBR });
+      const zonedDate = toZonedTime(item.sale.createdAt, timeZone);
+      const monthName = format(zonedDate, 'MMM', { locale: ptBR });
       
       const saleValue = item.priceAtSale * item.quantity;
       const profit = (item.priceAtSale - item.product.purchasePrice) * item.quantity;
