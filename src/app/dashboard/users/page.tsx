@@ -40,7 +40,7 @@ export default function UsersPage() {
   
   
   
-    const validateField = (name: string, value: string) => {
+    const validateField = (name: string, value: string, editingUser: User | null) => {
   
       let error = '';
   
@@ -108,7 +108,7 @@ export default function UsersPage() {
   
       setFormState(prev => ({ ...prev, [name]: value }));
   
-      validateField(name, value); // Validate on change
+      validateField(name, value, editingUser); // Validate on change
   
     };
   
@@ -124,7 +124,7 @@ export default function UsersPage() {
   
       ['name', 'email', 'role'].forEach(field => {
   
-        const error = validateField(field, formState[field as keyof typeof formState]);
+        const error = validateField(field, formState[field as keyof typeof formState], editingUser);
   
         if (error) {
   
@@ -138,7 +138,7 @@ export default function UsersPage() {
   
       // Password validation is conditional
   
-      const passwordError = validateField('password', formState.password);
+      const passwordError = validateField('password', formState.password, editingUser);
   
       if (passwordError) {
   
