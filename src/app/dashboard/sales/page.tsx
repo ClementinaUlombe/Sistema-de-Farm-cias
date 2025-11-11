@@ -127,7 +127,7 @@ export default function SalesPage() {
         <Typography component="h1" variant="h4" gutterBottom>Ponto de Venda</Typography>
         <Grid container spacing={3}>
           {/* Left Side: Search and Cart */}
-          <Grid item xs={12} md={7}>
+          <Grid size={{ xs: 12, md: 7 }}>
             <Paper sx={{ p: 2 }}>
               <Box sx={{ display: 'flex', gap: 1, mb: 2 }}>
                 <Autocomplete
@@ -159,15 +159,15 @@ export default function SalesPage() {
           </Grid>
 
           {/* Right Side: Total and Payment */}
-          <Grid item xs={12} md={5}>
+          <Grid size={{ xs: 12, md: 5 }}>
             <Paper sx={{ p: 2 }}>
               <Typography variant="h5" gutterBottom>Total da Venda</Typography>
               <Divider sx={{ my: 2 }} />
               <Grid container spacing={1} sx={{ my: 2, textAlign: 'right' }}>
-                <Grid item xs={6}><Typography>Subtotal:</Typography></Grid>
-                <Grid item xs={6}><Typography>{subtotal.toFixed(2)} MT</Typography></Grid>
-                <Grid item xs={6}><Typography>Desconto:</Typography></Grid>
-                <Grid item xs={6}><TextField size="small" variant="outlined" value={discount} onChange={e => setDiscount(e.target.value)} sx={{ input: { textAlign: 'right' } }} /></Grid>
+                <Grid size={{ xs: 6 }}><Typography>Subtotal:</Typography></Grid>
+                <Grid size={{ xs: 6 }}><Typography>{subtotal.toFixed(2)} MT</Typography></Grid>
+                <Grid size={{ xs: 6 }}><Typography>Desconto:</Typography></Grid>
+                <Grid size={{ xs: 6 }}><TextField size="small" variant="outlined" value={discount} onChange={e => setDiscount(e.target.value)} sx={{ input: { textAlign: 'right' } }} /></Grid>
               </Grid>
               <Divider sx={{ my: 2 }} />
               <Typography variant="h3" align="center" sx={{ my: 3 }}>{total.toFixed(2)} MT</Typography>
