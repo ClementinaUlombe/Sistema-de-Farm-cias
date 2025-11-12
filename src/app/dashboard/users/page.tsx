@@ -21,7 +21,14 @@ interface User {
   isActive: boolean;
 }
 
-const initialFormState = {
+interface FormState {
+  name: string;
+  email: string;
+  password?: string; // Password is optional for editing
+  role: UserRole;
+}
+
+const initialFormState: FormState = {
   name: '',
   email: '',
   password: '',
@@ -43,6 +50,25 @@ export default function UsersPage() {
   const [userIdToDelete, setUserIdToDelete] = useState('');
   const [modalOpen, setModalOpen] = useState(false);
   const [feedbackModalState, setFeedbackModalState] = useState({ open: false, message: '', severity: 'success' as 'success' | 'error' });
+
+  const handleOpenModal = (user?: User) => {
+    setModalOpen(true);
+    setFormErrors({});
+    if (user) {
+      setEditingUser(user);
+      setFormState({ ...user, password: '' }); // Pre-fill form for editing, clear password
+    } else {
+      setEditingUser(null);
+      setFormState(initialFormState); // Reset for new user
+    }
+  };
+
+  const handleCloseModal = () => {
+    setModalOpen(false);
+    setEditingUser(null);
+    setFormState(initialFormState);
+    setFormErrors({});
+  };
   
   
   
