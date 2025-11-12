@@ -12,7 +12,7 @@ import {
 import FeedbackModal from '../../components/FeedbackModal';
 import { Edit as EditIcon, Delete as DeleteIcon } from '@mui/icons-material';
 import { UserRole } from '@prisma/client';
-import Grid from '@mui/material/Grid';
+
 import { Box, Button } from '@mui/material';
 
 interface User {
@@ -337,11 +337,19 @@ export default function UsersPage() {
   
     return (
   
-      <Container component="main" maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
-  
+ <Container
+      component="main"
+      maxWidth="xl"
+      sx={{
+        mt: 4,
+        mb: 4,
+        // em telas grandes, move ligeiramente à esquerda
+        '@media (min-width: 1024px)': { transform: 'translateX(-12%)' },
+      }}
+    >  
         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 4 }}>
   
-          <Typography component="h1" variant="h4">Gestão de Utilizadores</Typography>
+          <Typography component="h1" variant="h4" sx={{ fontSize: { xs: '1.5rem', sm: '2.125rem' } }}>Gestão de Utilizadores</Typography>
   
           <Button variant="contained" onClick={() => handleOpenModal()}>Adicionar Utilizador</Button>
   
@@ -353,31 +361,35 @@ export default function UsersPage() {
   
           <Table>
   
-            <TableHead><TableRow><TableCell>Nome</TableCell><TableCell>Email</TableCell><TableCell>Perfil</TableCell><TableCell align="right">Ações</TableCell></TableRow></TableHead>
+            <TableHead><TableRow><TableCell sx={{ p: { xs: 1, sm: 2 } }}>Nome</TableCell><TableCell sx={{ p: { xs: 1, sm: 2 }, display: { xs: 'none', sm: 'table-cell' } }}>Email</TableCell><TableCell sx={{ p: { xs: 1, sm: 2 }, display: { xs: 'none', sm: 'table-cell' } }}>Perfil</TableCell><TableCell align="right" sx={{ p: { xs: 1, sm: 2 } }}>Ações</TableCell></TableRow></TableHead>
   
             <TableBody>
   
-              {users.map((user) => (
+                                          {users.map((user) => (
   
-                <TableRow key={user.id}>
+                                            <TableRow key={user.id}>
   
-                  <TableCell>{user.name}</TableCell>
+                                              <TableCell sx={{ p: { xs: 1, sm: 2 } }}>{user.name}</TableCell>
   
-                  <TableCell>{user.email}</TableCell>
+                                              <TableCell sx={{ p: { xs: 1, sm: 2 }, display: { xs: 'none', sm: 'table-cell' } }}>{user.email}</TableCell>
   
-                  <TableCell>{user.role}</TableCell>
+                                              <TableCell sx={{ p: { xs: 1, sm: 2 }, display: { xs: 'none', sm: 'table-cell' } }}>{user.role}</TableCell>
   
-                  <TableCell align="right">
+                                                                <TableCell align="right" sx={{ p: { xs: 1, sm: 2 } }}>
   
-                    <Tooltip title="Editar"><IconButton onClick={() => handleOpenModal(user)}><EditIcon /></IconButton></Tooltip>
+                                                                  <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 0.5 }}>
   
-                    {session?.user?.id !== user.id && <Tooltip title="Apagar"><IconButton onClick={() => handleDeleteClick(user.id)}><DeleteIcon /></IconButton></Tooltip>}
+                                                                    <Tooltip title="Editar"><IconButton size="small" onClick={() => handleOpenModal(user)}><EditIcon fontSize="small" /></IconButton></Tooltip>
   
-                  </TableCell>
+                                                                    {session?.user?.id !== user.id && <Tooltip title="Apagar"><IconButton size="small" onClick={() => handleDeleteClick(user.id)}><DeleteIcon fontSize="small" /></IconButton></Tooltip>}
   
-                </TableRow>
+                                                                  </Box>
   
-              ))}
+                                                                </TableCell>
+  
+                                            </TableRow>
+  
+                                          ))}
   
             </TableBody>
   
@@ -394,101 +406,82 @@ export default function UsersPage() {
           <DialogTitle>{editingUser ? 'Editar Utilizador' : 'Adicionar Novo Utilizador'}</DialogTitle>
   
           <DialogContent>
-  
-            <Grid container spacing={2} sx={{ mt: 1 }}>
-  
-              <Grid size={{ xs: 12 }}>
-  
-                <TextField
-  
-                  label="Nome Completo"
-  
-                  name="name"
-  
-                  value={formState.name}
-  
-                  onChange={handleInputChange}
-  
-                  fullWidth
-  
-                  required
-  
-                  error={!!formErrors.name}
-  
-                  helperText={formErrors.name || "Ex: João Silva"}
-  
-                  placeholder="Ex: João Silva"
-  
-                />
-  
-              </Grid>
-  
-                            <Grid size={{ xs: 12 }}>
-  
-                              <TextField
-  
-                                label="Email"
-  
-                  name="email"
-  
-                  type="email"
-  
-                  value={formState.email}
-  
-                  onChange={handleInputChange}
-  
-                  fullWidth
-  
-                  required
-  
-                  error={!!formErrors.email}
-  
-                  helperText={formErrors.email || "Ex: joao.silva@example.com"}
-  
-                  placeholder="Ex: joao.silva@example.com"
-  
-                />
-  
-              </Grid>
-  
-                            <Grid size={{ xs: 12 }}>
-                              <TextField
-                                label="Senha"
-                                name="password"
-                                type="password"
-                                onChange={handleInputChange}
-                                fullWidth
-                                required={!editingUser}
-                                error={!!formErrors.password}
-                                helperText={formErrors.password || (editingUser ? 'Deixe em branco para não alterar' : 'Ex: MinhaSenhaForte1!')}
-                                placeholder={editingUser ? '' : 'Ex: MinhaSenhaForte1!'}
-                              />
-                            </Grid>  
-              <Grid size={{ xs: 12 }}>
-  
-                <FormControl fullWidth required error={!!formErrors.role}>
-  
-                  <InputLabel>Perfil</InputLabel>
-  
-                  <Select name="role" value={formState.role} label="Perfil" onChange={handleInputChange}>
-  
-                    <MenuItem value={UserRole.ADMIN}>Admin</MenuItem>
-  
-                    <MenuItem value={UserRole.ATTENDANT}>Atendente</MenuItem>
-  
-                    <MenuItem value={UserRole.STOCKIST}>Stockista</MenuItem>
-  
-                  </Select>
-  
-                  {formErrors.role && <Typography color="error" variant="caption">{formErrors.role}</Typography>}
-  
-                </FormControl>
-  
-              </Grid>
-  
-            </Grid>
-  
-          </DialogContent>
+  <div className="mt-2 grid grid-cols-1 gap-4 sm:gap-6">
+    {/* Nome Completo */}
+    <div className="w-full">
+      <TextField
+        label="Nome Completo"
+        name="name"
+        value={formState.name}
+        onChange={handleInputChange}
+        fullWidth
+        required
+        error={!!formErrors.name}
+        helperText={formErrors.name || "Ex: João Silva"}
+        placeholder="Ex: João Silva"
+      />
+    </div>
+
+    {/* Email */}
+    <div className="w-full">
+      <TextField
+        label="Email"
+        name="email"
+        type="email"
+        value={formState.email}
+        onChange={handleInputChange}
+        fullWidth
+        required
+        error={!!formErrors.email}
+        helperText={formErrors.email || "Ex: joao.silva@example.com"}
+        placeholder="Ex: joao.silva@example.com"
+      />
+    </div>
+
+    {/* Senha */}
+    <div className="w-full">
+      <TextField
+        label="Senha"
+        name="password"
+        type="password"
+        onChange={handleInputChange}
+        fullWidth
+        required={!editingUser}
+        error={!!formErrors.password}
+        helperText={
+          formErrors.password ||
+          (editingUser
+            ? 'Deixe em branco para não alterar'
+            : 'Ex: MinhaSenhaForte1!')
+        }
+        placeholder={editingUser ? '' : 'Ex: MinhaSenhaForte1!'}
+      />
+    </div>
+
+    {/* Perfil */}
+    <div className="w-full">
+      <FormControl fullWidth required error={!!formErrors.role}>
+        <InputLabel>Perfil</InputLabel>
+        <Select
+          name="role"
+          value={formState.role}
+          label="Perfil"
+          onChange={handleInputChange}
+        >
+          <MenuItem value={UserRole.ADMIN}>Admin</MenuItem>
+          <MenuItem value={UserRole.ATTENDANT}>Atendente</MenuItem>
+          <MenuItem value={UserRole.STOCKIST}>Stockista</MenuItem>
+        </Select>
+        {formErrors.role && (
+          <Typography color="error" variant="caption">
+            {formErrors.role}
+          </Typography>
+        )}
+      </FormControl>
+    </div>
+  </div>
+</DialogContent>
+
   
           <DialogActions>
   

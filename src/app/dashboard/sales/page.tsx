@@ -121,111 +121,214 @@ export default function SalesPage() {
     />
   );
 
-  return (
-    <>
-      <Container maxWidth="xl" sx={{ mt: 4, mb: 4, '@media print': { display: 'none' } }}>
-        <Typography component="h1" variant="h4" gutterBottom>Ponto de Venda</Typography>
-        <Grid container spacing={3}>
-          {/* Left Side: Search and Cart */}
-          <Grid size={{ xs: 12, md: 7 }}>
-            <Paper sx={{ p: 2 }}>
-              <Box sx={{ display: 'flex', gap: 1, mb: 2 }}>
-                <Autocomplete
-                  options={Array.isArray(products) ? products.filter(p => p.stockQuantity > 0) : []}
-                  getOptionLabel={(o) => `${o.name} (Stock: ${o.stockQuantity})`}
-                  onChange={(e, val) => val && addToCart(val)}
-                  renderInput={(params) => <TextField {...params} label="Pesquisar Produto" />}
-                  sx={{ flexGrow: 1 }}
+ return (
+  <>
+    {/* Container principal */}
+    <div className="max-w-full mt-4 mb-4 px-4 lg:max-w-6xl lg:mx-auto lg:translate-x-[-12%]">
+      {/* ^ move ligeiramente para a esquerda apenas em telas grandes */}
+
+      <Typography component="h1" variant="h4" gutterBottom>
+        Ponto de Venda
+      </Typography>
+
+      {/* Conteúdo dividido em 2 colunas responsivas */}
+      <div className="flex flex-col lg:flex-row lg:gap-6">
+        {/* Lado esquerdo: pesquisa e carrinho */}
+        <div className="w-full lg:w-2/3">
+          <Paper className="p-4 shadow-md rounded-2xl">
+            <Box className="flex gap-2 mb-4">
+              <Autocomplete
+                options={Array.isArray(products) ? products.filter((p) => p.stockQuantity > 0) : []}
+                getOptionLabel={(o) => `${o.name} (Stock: ${o.stockQuantity})`}
+                onChange={(e, val) => val && addToCart(val)}
+                renderInput={(params) => <TextField {...params} label="Pesquisar Produto" />}
+                sx={{ flexGrow: 1 }}
+              />
+              <IconButton color="primary" onClick={() => setScannerOpen(true)}>
+                <QrCodeScannerIcon />
+              </IconButton>
+            </Box>
+
+            <List sx={{ mt: 2 }}>
+              {cart.map((item) => (
+                <ListItem key={item.id} divider>
+                  <ListItemText
+                    primary={item.name}
+                    secondary={`Preço: ${item.sellingPrice.toFixed(2)} MT`}
+                  />
+                  <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                    <IconButton onClick={() => updateQuantity(item.id, -1)}>
+                      <RemoveCircleOutline />
+                    </IconButton>
+                    <Typography sx={{ mx: 1 }}>{item.quantity}</Typography>
+                    <IconButton
+                      onClick={() => updateQuantity(item.id, 1)}
+                      disabled={item.quantity >= item.stockQuantity}
+                    >
+                      <AddCircleOutline />
+                    </IconButton>
+                    <IconButton
+                      onClick={() => removeFromCart(item.id)}
+                      edge="end"
+                      sx={{ ml: 2 }}
+                    >
+                      <Delete />
+                    </IconButton>
+                  </Box>
+                </ListItem>
+              ))}
+              {cart.length === 0 && (
+                <Typography sx={{ p: 2, textAlign: 'center' }}>Carrinho vazio</Typography>
+              )}
+            </List>
+          </Paper>
+        </div>
+
+        {/* Lado direito: total e pagamento */}
+        <div className="w-full lg:w-1/3 mt-6 lg:mt-0">
+          <Paper className="p-4 shadow-md rounded-2xl">
+            <Typography variant="h5" gutterBottom>
+              Total da Venda
+            </Typography>
+            <Divider sx={{ my: 2 }} />
+
+            <div className="my-2 text-right space-y-2">
+              <div className="flex justify-between">
+                <Typography>Subtotal:</Typography>
+                <Typography>{subtotal.toFixed(2)} MT</Typography>
+              </div>
+              <div className="flex justify-between items-center">
+                <Typography>Desconto:</Typography>
+                <TextField
+                  size="small"
+                  variant="outlined"
+                  value={discount}
+                  onChange={(e) => setDiscount(e.target.value)}
+                  sx={{ input: { textAlign: 'right' } }}
                 />
-                <IconButton color="primary" onClick={() => setScannerOpen(true)}>
-                  <QrCodeScannerIcon />
-                </IconButton>
-              </Box>
-              <List sx={{ mt: 2 }}>
-                {cart.map(item => (
-                  <ListItem key={item.id} divider>
-                    <ListItemText primary={item.name} secondary={`Preço: ${item.sellingPrice.toFixed(2)} MT`} />
-                    <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                      <IconButton onClick={() => updateQuantity(item.id, -1)}><RemoveCircleOutline /></IconButton>
-                      <Typography sx={{ mx: 1 }}>{item.quantity}</Typography>
-                      <IconButton onClick={() => updateQuantity(item.id, 1)} disabled={item.quantity >= item.stockQuantity}><AddCircleOutline /></IconButton>
-                      <IconButton onClick={() => removeFromCart(item.id)} edge="end" sx={{ ml: 2 }}><Delete /></IconButton>
-                    </Box>
-                  </ListItem>
-                ))}
-                {cart.length === 0 && <Typography sx={{ p: 2, textAlign: 'center' }}>Carrinho vazio</Typography>}
-              </List>
-            </Paper>
-          </Grid>
+              </div>
+            </div>
 
-          {/* Right Side: Total and Payment */}
-          <Grid size={{ xs: 12, md: 5 }}>
-            <Paper sx={{ p: 2 }}>
-              <Typography variant="h5" gutterBottom>Total da Venda</Typography>
-              <Divider sx={{ my: 2 }} />
-              <Grid container spacing={1} sx={{ my: 2, textAlign: 'right' }}>
-                <Grid size={{ xs: 6 }}><Typography>Subtotal:</Typography></Grid>
-                <Grid size={{ xs: 6 }}><Typography>{subtotal.toFixed(2)} MT</Typography></Grid>
-                <Grid size={{ xs: 6 }}><Typography>Desconto:</Typography></Grid>
-                <Grid size={{ xs: 6 }}><TextField size="small" variant="outlined" value={discount} onChange={e => setDiscount(e.target.value)} sx={{ input: { textAlign: 'right' } }} /></Grid>
-              </Grid>
-              <Divider sx={{ my: 2 }} />
-              <Typography variant="h3" align="center" sx={{ my: 3 }}>{total.toFixed(2)} MT</Typography>
-              <FormControl fullWidth sx={{ my: 2 }}>
-                <InputLabel>Método de Pagamento</InputLabel>
-                <Select value={paymentMethod} label="Método de Pagamento" onChange={(e) => setPaymentMethod(e.target.value)}>
-                  <MenuItem value="dinheiro">Dinheiro</MenuItem>
-                  <MenuItem value="pos">POS</MenuItem>
-                  <MenuItem value="transferencia">Transferência</MenuItem>
-                </Select>
-              </FormControl>
-              <Button variant="contained" color="primary" fullWidth size="large" onClick={handleFinalizeSale} disabled={cart.length === 0 || submitting}>{submitting ? <CircularProgress size={26} color="inherit" /> : 'Finalizar Venda'}</Button>
-            </Paper>
-          </Grid>
-        </Grid>
-      </Container>
+            <Divider sx={{ my: 2 }} />
+            <Typography variant="h3" align="center" sx={{ my: 3 }}>
+              {total.toFixed(2)} MT
+            </Typography>
 
-      {/* Receipt Modal */}
-      <Dialog open={receiptOpen} fullWidth maxWidth="sm">
-        <DialogContent id="receipt-content">
-          <Typography variant="h5" align="center" gutterBottom>Recibo</Typography>
-          <Box sx={{ my: 2 }}>
-            <Typography variant="body2">ID da Venda: {lastSale?.id}</Typography>
-            <Typography variant="body2">Data: {lastSale && new Date(lastSale.createdAt).toLocaleString()}</Typography>
-            <Typography variant="body2">Atendente: {lastSale?.attendant.name}</Typography>
-          </Box>
-          <TableContainer component={Paper} elevation={0} variant="outlined">
-            <Table size="small">
-              <TableHead><TableRow><TableCell>Item</TableCell><TableCell align="right">Qtd</TableCell><TableCell align="right">Preço Unit.</TableCell><TableCell align="right">Total</TableCell></TableRow></TableHead>
-              <TableBody>
-                {lastSale?.items.map(item => (
-                  <TableRow key={item.product.name}>
-                    <TableCell>{item.product.name}</TableCell>
-                    <TableCell align="right">{item.quantity}</TableCell>
-                    <TableCell align="right">{item.priceAtSale.toFixed(2)}</TableCell>
-                    <TableCell align="right">{(item.quantity * item.priceAtSale).toFixed(2)}</TableCell>
-                  </TableRow>
-                ))}
-                <TableRow><TableCell colSpan={3} align="right">Subtotal</TableCell><TableCell align="right">{lastSale && (lastSale.total + lastSale.discount).toFixed(2)}</TableCell></TableRow>
-                <TableRow><TableCell colSpan={3} align="right">Desconto</TableCell><TableCell align="right">- {lastSale?.discount.toFixed(2)}</TableCell></TableRow>
-                <TableRow><TableCell colSpan={3} align="right"><Typography variant="h6">Total</Typography></TableCell><TableCell align="right"><Typography variant="h6">{lastSale?.total.toFixed(2)}</Typography></TableCell></TableRow>
-              </TableBody>
-            </Table>
-          </TableContainer>
-          <Typography variant="body2" align="center" sx={{ mt: 2 }}>Método de Pagamento: {lastSale?.paymentMethod}</Typography>
-        </DialogContent>
-        <DialogActions sx={{ '@media print': { display: 'none' } }}>
-          <Button onClick={() => window.print()} startIcon={<Print />}>Imprimir</Button>
-          <Button onClick={resetSale} variant="contained">Nova Venda</Button>
-        </DialogActions>
-      </Dialog>
+            <FormControl fullWidth sx={{ my: 2 }}>
+              <InputLabel>Método de Pagamento</InputLabel>
+              <Select
+                value={paymentMethod}
+                label="Método de Pagamento"
+                onChange={(e) => setPaymentMethod(e.target.value)}
+              >
+                <MenuItem value="dinheiro">Dinheiro</MenuItem>
+                <MenuItem value="pos">POS</MenuItem>
+                <MenuItem value="transferencia">Transferência</MenuItem>
+              </Select>
+            </FormControl>
 
-      <BarcodeScanner
-        isOpen={scannerOpen}
-        onClose={() => setScannerOpen(false)}
-        onScanSuccess={handleScanSuccess}
-        onScanError={(error) => setFeedbackModalState({ open: true, message: `Erro ao escanear: ${error}`, severity: 'error' })}
-      />
-    </>
-  );
+            <Button
+              variant="contained"
+              color="primary"
+              fullWidth
+              size="large"
+              onClick={handleFinalizeSale}
+              disabled={cart.length === 0 || submitting}
+            >
+              {submitting ? <CircularProgress size={26} color="inherit" /> : 'Finalizar Venda'}
+            </Button>
+          </Paper>
+        </div>
+      </div>
+    </div>
+
+    {/* Modal do Recibo */}
+    <Dialog open={receiptOpen} fullWidth maxWidth="sm">
+      <DialogContent id="receipt-content">
+        <Typography variant="h5" align="center" gutterBottom>
+          Recibo
+        </Typography>
+        <Box sx={{ my: 2 }}>
+          <Typography variant="body2">ID da Venda: {lastSale?.id}</Typography>
+          <Typography variant="body2">
+            Data: {lastSale && new Date(lastSale.createdAt).toLocaleString()}
+          </Typography>
+          <Typography variant="body2">Atendente: {lastSale?.attendant.name}</Typography>
+        </Box>
+        <TableContainer component={Paper} elevation={0} variant="outlined">
+          <Table size="small">
+            <TableHead>
+              <TableRow>
+                <TableCell>Item</TableCell>
+                <TableCell align="right">Qtd</TableCell>
+                <TableCell align="right">Preço Unit.</TableCell>
+                <TableCell align="right">Total</TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {lastSale?.items.map((item) => (
+                <TableRow key={item.product.name}>
+                  <TableCell>{item.product.name}</TableCell>
+                  <TableCell align="right">{item.quantity}</TableCell>
+                  <TableCell align="right">{item.priceAtSale.toFixed(2)}</TableCell>
+                  <TableCell align="right">
+                    {(item.quantity * item.priceAtSale).toFixed(2)}
+                  </TableCell>
+                </TableRow>
+              ))}
+              <TableRow>
+                <TableCell colSpan={3} align="right">
+                  Subtotal
+                </TableCell>
+                <TableCell align="right">
+                  {lastSale && (lastSale.total + lastSale.discount).toFixed(2)}
+                </TableCell>
+              </TableRow>
+              <TableRow>
+                <TableCell colSpan={3} align="right">
+                  Desconto
+                </TableCell>
+                <TableCell align="right">- {lastSale?.discount.toFixed(2)}</TableCell>
+              </TableRow>
+              <TableRow>
+                <TableCell colSpan={3} align="right">
+                  <Typography variant="h6">Total</Typography>
+                </TableCell>
+                <TableCell align="right">
+                  <Typography variant="h6">{lastSale?.total.toFixed(2)}</Typography>
+                </TableCell>
+              </TableRow>
+            </TableBody>
+          </Table>
+        </TableContainer>
+        <Typography variant="body2" align="center" sx={{ mt: 2 }}>
+          Método de Pagamento: {lastSale?.paymentMethod}
+        </Typography>
+      </DialogContent>
+      <DialogActions sx={{ '@media print': { display: 'none' } }}>
+        <Button onClick={() => window.print()} startIcon={<Print />}>
+          Imprimir
+        </Button>
+        <Button onClick={resetSale} variant="contained">
+          Nova Venda
+        </Button>
+      </DialogActions>
+    </Dialog>
+
+    {/* Scanner de código de barras */}
+    <BarcodeScanner
+      isOpen={scannerOpen}
+      onClose={() => setScannerOpen(false)}
+      onScanSuccess={handleScanSuccess}
+      onScanError={(error) =>
+        setFeedbackModalState({
+          open: true,
+          message: `Erro ao escanear: ${error}`,
+          severity: 'error',
+        })
+      }
+    />
+  </>
+);
+
 }

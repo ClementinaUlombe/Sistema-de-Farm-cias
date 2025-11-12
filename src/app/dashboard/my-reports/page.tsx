@@ -2,10 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useSession } from 'next-auth/react';
-import { 
-  Container, Box, Typography, CircularProgress, Alert, Grid, Paper, TextField, Button,
-  Table, TableBody, TableCell, TableContainer, TableHead, TableRow
-} from '@mui/material';
+import { Container, CircularProgress, Alert, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Button } from '@mui/material';
 import { UserRole } from '@prisma/client';
 
 interface MyReportData {
@@ -21,7 +18,6 @@ export default function MyReportPage() {
   const [error, setError] = useState('');
   const [dates, setDates] = useState({ from: '', to: '' });
 
-  // Generate report on initial load
   useEffect(() => {
     generateReport();
   }, []);
@@ -39,55 +35,135 @@ export default function MyReportPage() {
       const res = await fetch(url);
       if (!res.ok) throw new Error((await res.json()).error || 'Falha ao gerar relatório');
       setReportData(await res.json());
-    } catch (err: any) { setError(err.message); }
-    finally { setLoading(false); }
+    } catch (err: any) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const userRole = session?.user?.role as UserRole;
 
-  if (status === 'loading') return <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}><CircularProgress /></Box>;
-  if (!([UserRole.ADMIN, UserRole.ATTENDANT] as UserRole[]).includes(userRole)) return <Container><Alert severity="error" sx={{ mt: 4 }}>Acesso Negado.</Alert></Container>;
+  if (status === 'loading')
+    return (
+      <div className="flex justify-center items-center h-screen">
+        <CircularProgress />
+      </div>
+    );
 
-  return (
-    <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
-      <Typography component="h1" variant="h4" gutterBottom>Os Meus Relatórios de Vendas</Typography>
-      
-      <Paper sx={{ p: 2, mb: 4 }}>
-        <Grid container spacing={2} alignItems="center">
-          <Grid size={{ xs: 12, sm: 5 }}><TextField name="from" label="De" type="date" value={dates.from} onChange={handleDateChange} fullWidth InputLabelProps={{ shrink: true }} /></Grid>
-          <Grid size={{ xs: 12, sm: 5 }}><TextField name="to" label="Até" type="date" value={dates.to} onChange={handleDateChange} fullWidth InputLabelProps={{ shrink: true }} /></Grid>
-          <Grid size={{ xs: 12, sm: 2 }}><Button variant="contained" onClick={generateReport} disabled={loading} fullWidth>{loading ? 'Gerando...' : 'Gerar'}</Button></Grid>
-        </Grid>
-      </Paper>
+  if (!([UserRole.ADMIN, UserRole.ATTENDANT] as UserRole[]).includes(userRole))
+    return (
+      <Container className="mt-4">
+        <Alert severity="error">Acesso Negado.</Alert>
+      </Container>
+    );
 
-      {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
-      {loading && <Box sx={{ display: 'flex', justifyContent: 'center' }}><CircularProgress /></Box>}
 
+return (
+  <Container
+    component="main"
+    maxWidth="xl"
+    sx={{
+      mt: 4,
+      mb: 4,
+      // em telas grandes, move ligeiramente à esquerda
+      '@media (min-width: 1024px)': { transform: 'translateX(-12%)' },
+    }}
+  >
+    <div className="lg:max-w-screen-lg lg:mx-auto">
+      <h1 className="text-2xl sm:text-3xl font-bold mb-6">Os Meus Relatórios de Vendas</h1>
+
+      {/* Filtros */}
+      <div className="bg-white shadow-md rounded-lg p-5 mb-6 w-full">
+        <div className="grid grid-cols-1 sm:grid-cols-12 gap-4 items-center">
+          <div className="sm:col-span-5">
+            <label htmlFor="from" className="block text-sm font-medium mb-1">De</label>
+            <input
+              type="date"
+              id="from"
+              name="from"
+              value={dates.from}
+              onChange={handleDateChange}
+              className="w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            />
+          </div>
+          <div className="sm:col-span-5">
+            <label htmlFor="to" className="block text-sm font-medium mb-1">Até</label>
+            <input
+              type="date"
+              id="to"
+              name="to"
+              value={dates.to}
+              onChange={handleDateChange}
+              className="w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            />
+          </div>
+          <div className="w-full sm:w-2/12 px-2">
+            <Button 
+              variant="contained" 
+              onClick={generateReport}
+              disabled={loading}
+              className={`w-full p-2 rounded-md text-white font-medium ${
+                loading ? 'bg-gray-400 cursor-not-allowed' : 'bg-indigo-600 hover:bg-indigo-700'
+              }`}
+            >
+              {loading ? 'Gerando...' : 'Gerar'}
+            </Button>
+          </div>
+        </div>
+      </div>
+
+      {/* Mensagem de erro */}
+      {error && <div className="mb-4 p-3 bg-red-100 text-red-700 rounded-md">{error}</div>}
+
+      {/* Loading */}
+      {loading && (
+        <div className="flex justify-center my-4">
+          <svg className="animate-spin h-8 w-8 text-indigo-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path>
+          </svg>
+        </div>
+      )}
+
+      {/* Relatórios */}
       {reportData && (
-        <Box>
-          <Grid container spacing={3} sx={{ mb: 4 }}>
-            <Grid size={{ xs: 12, sm: 6 }}><Paper sx={{ p: 2, textAlign: 'center' }}><Typography variant="h6">Total Vendido</Typography><Typography variant="h4">{reportData.totalSalesValue.toFixed(2)} MT</Typography></Paper></Grid>
-            <Grid size={{ xs: 12, sm: 6 }}><Paper sx={{ p: 2, textAlign: 'center' }}><Typography variant="h6">Nº de Vendas</Typography><Typography variant="h4">{reportData.saleCount}</Typography></Paper></Grid>
-          </Grid>
+        <>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-6">
+            <div className="bg-white shadow-md rounded-lg p-5 text-center">
+              <h3 className="text-lg font-medium mb-2">Total Vendido</h3>
+              <p className="text-2xl sm:text-3xl font-bold">{reportData.totalSalesValue.toFixed(2)} MT</p>
+            </div>
+            <div className="bg-white shadow-md rounded-lg p-5 text-center">
+              <h3 className="text-lg font-medium mb-2">Nº de Vendas</h3>
+              <p className="text-2xl sm:text-3xl font-bold">{reportData.saleCount}</p>
+            </div>
+          </div>
 
-          <Typography component="h2" variant="h5" gutterBottom>Minhas Vendas Detalhadas</Typography>
+          <h2 className="text-xl sm:text-2xl font-semibold mb-3">Minhas Vendas Detalhadas</h2>
           <TableContainer component={Paper}>
             <Table size="small">
-              <TableHead><TableRow><TableCell>Data</TableCell><TableCell>Nº Itens</TableCell><TableCell>Método Pag.</TableCell><TableCell>Total</TableCell></TableRow></TableHead>
+              <TableHead>
+                <TableRow>
+                  <TableCell className="p-1 sm:p-2">Data</TableCell>
+                  <TableCell className="hidden sm:table-cell p-1 sm:p-2">Nº Itens</TableCell>
+                  <TableCell className="hidden sm:table-cell p-1 sm:p-2">Método Pag.</TableCell>
+                  <TableCell className="p-1 sm:p-2">Total</TableCell>
+                </TableRow>
+              </TableHead>
               <TableBody>
                 {reportData.detailedSales.map(sale => (
-                  <TableRow key={sale.id}>
-                    <TableCell>{new Date(sale.createdAt).toLocaleString()}</TableCell>
-                    <TableCell>{sale.itemCount}</TableCell>
-                    <TableCell>{sale.paymentMethod}</TableCell>
-                    <TableCell>{sale.total.toFixed(2)}</TableCell>
-                  </TableRow>
+                                    <TableRow key={sale.id}>
+                                      <TableCell className="p-1 sm:p-2">{new Date(sale.createdAt).toLocaleString()}</TableCell><TableCell className="hidden sm:table-cell p-1 sm:p-2">{sale.itemCount}</TableCell><TableCell className="hidden sm:table-cell p-1 sm:p-2">{sale.paymentMethod}</TableCell><TableCell className="p-1 sm:p-2">{sale.total.toFixed(2)}</TableCell>
+                                    </TableRow>
                 ))}
               </TableBody>
             </Table>
           </TableContainer>
-        </Box>
+        </>
       )}
-    </Container>
-  );
+    </div>
+  </Container>
+);
+
 }

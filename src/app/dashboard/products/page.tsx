@@ -6,7 +6,7 @@ import { useRouter } from 'next/navigation';
 import {
   Container, Box, Typography, Button, CircularProgress,
   Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper,
-  Dialog, DialogActions, DialogContent, DialogTitle, TextField, Grid,
+  Dialog, DialogActions, DialogContent, DialogTitle, TextField, 
   IconButton, Tooltip, Select, MenuItem, InputLabel, FormControl
 } from '@mui/material';
 import FeedbackModal from '../../components/FeedbackModal'; // Import FeedbackModal
@@ -258,8 +258,16 @@ export default function ProductsPage() {
   );
 
   return (
-    <Container component="main" maxWidth="xl" sx={{ mt: 4, mb: 4 }}>
-      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 4 }}>
+ <Container
+      component="main"
+      maxWidth="xl"
+      sx={{
+        mt: 4,
+        mb: 4,
+        // em telas grandes, move ligeiramente à esquerda
+        '@media (min-width: 1024px)': { transform: 'translateX(-12%)' },
+      }}
+    >      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 4 }}>
         <Typography component="h1" variant="h4">Gestão de Produtos</Typography>
         <Button variant="contained" onClick={() => handleOpenModal()}>Adicionar Novo Produto</Button>
       </Box>
@@ -268,25 +276,27 @@ export default function ProductsPage() {
         <Table>
           <TableHead>
             <TableRow>
-              <TableCell>Nome</TableCell>
-              <TableCell>Categoria</TableCell>
-              <TableCell>Stock</TableCell>
-              <TableCell>Preço (MT)</TableCell>
-              <TableCell>Data de Validade</TableCell>
-              <TableCell align="right">Ações</TableCell>
+              <TableCell sx={{ p: { xs: 1, sm: 2 } }}>Nome</TableCell>
+              <TableCell sx={{ p: { xs: 1, sm: 2 } }}>Categoria</TableCell>
+              <TableCell sx={{ p: { xs: 1, sm: 2 }, display: { xs: 'none', sm: 'table-cell' } }}>Stock</TableCell>
+              <TableCell sx={{ p: { xs: 1, sm: 2 }, display: { xs: 'none', sm: 'table-cell' } }}>Preço (MT)</TableCell>
+              <TableCell sx={{ p: { xs: 1, sm: 2 }, display: { xs: 'none', sm: 'table-cell' } }}>Data de Validade</TableCell>
+              <TableCell align="right" sx={{ p: { xs: 1, sm: 2 } }}>Ações</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
             {products.map((product) => (
               <TableRow key={product.id}>
-                <TableCell>{product.name}</TableCell>
-                <TableCell>{product.category}</TableCell>
-                <TableCell>{product.stockQuantity}</TableCell>
-                <TableCell>{product.sellingPrice.toFixed(2)}</TableCell>
-                <TableCell>{new Date(product.expiryDate).toLocaleDateString()}</TableCell>
-                <TableCell align="right">
-                  <Tooltip title="Editar"><IconButton onClick={() => handleOpenModal(product)}><EditIcon /></IconButton></Tooltip>
-                  <Tooltip title="Apagar"><IconButton onClick={() => handleDeleteClick(product.id)}><DeleteIcon /></IconButton></Tooltip>
+                <TableCell sx={{ p: { xs: 1, sm: 2 } }}>{product.name}</TableCell>
+                <TableCell sx={{ p: { xs: 1, sm: 2 } }}>{product.category}</TableCell>
+                <TableCell sx={{ p: { xs: 1, sm: 2 }, display: { xs: 'none', sm: 'table-cell' } }}>{product.stockQuantity}</TableCell>
+                <TableCell sx={{ p: { xs: 1, sm: 2 }, display: { xs: 'none', sm: 'table-cell' } }}>{product.sellingPrice.toFixed(2)}</TableCell>
+                <TableCell sx={{ p: { xs: 1, sm: 2 }, display: { xs: 'none', sm: 'table-cell' } }}>{new Date(product.expiryDate).toLocaleDateString()}</TableCell>
+                <TableCell align="right" sx={{ p: { xs: 1, sm: 2 } }}>
+                  <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 0.5 }}>
+                    <Tooltip title="Editar"><IconButton size="small" onClick={() => handleOpenModal(product)}><EditIcon fontSize="small" /></IconButton></Tooltip>
+                    <Tooltip title="Apagar"><IconButton size="small" onClick={() => handleDeleteClick(product.id)}><DeleteIcon fontSize="small" /></IconButton></Tooltip>
+                  </Box>
                 </TableCell>
               </TableRow>
             ))}
@@ -295,157 +305,191 @@ export default function ProductsPage() {
       </TableContainer>
 
       {/* Add/Edit Product Modal */}
-      <Dialog open={modalOpen} onClose={handleCloseModal} maxWidth="md" fullWidth>
-        <DialogTitle>{editingProduct ? 'Editar Produto' : 'Adicionar Novo Produto'}</DialogTitle>
-        <DialogContent>
-          <Grid container spacing={2} sx={{ mt: 1 }}>
-            <Grid size={{ xs: 12, sm: 6 }}>
-              <TextField
-                label="Nome do Produto"
-                name="name"
-                value={formState.name}
-                onChange={handleInputChange}
-                fullWidth
-                required
-                error={!!formErrors.name}
-                helperText={formErrors.name || "Ex: Paracetamol 500mg"}
-                placeholder="Ex: Paracetamol 500mg"
-              />
-            </Grid>
-            <Grid size={{ xs: 12, sm: 6 }}>
-              <TextField
-                label="Categoria"
-                name="category"
-                value={formState.category}
-                onChange={handleInputChange}
-                fullWidth
-                required
-                error={!!formErrors.category}
-                helperText={formErrors.category || "Ex: Analgésicos"}
-                placeholder="Ex: Analgésicos"
-              />
-            </Grid>
-            <Grid size={{ xs: 12, sm: 6 }}>
-              <TextField
-                label="Dosagem"
-                name="dosage"
-                value={formState.dosage}
-                onChange={handleInputChange}
-                fullWidth
-                error={!!formErrors.dosage}
-                helperText={formErrors.dosage || "Ex: 500mg"}
-                placeholder="Ex: 500mg"
-              />
-            </Grid>
-            <Grid size={{ xs: 12, sm: 6 }}>
-              <TextField
-                label="Fabricante"
-                name="manufacturer"
-                value={formState.manufacturer}
-                onChange={handleInputChange}
-                fullWidth
-                error={!!formErrors.manufacturer}
-                helperText={formErrors.manufacturer || "Ex: Pfizer"}
-                placeholder="Ex: Pfizer"
-              />
-            </Grid>
-            <Grid size={{ xs: 12, sm: 6 }}>
-              <TextField
-                label="Preço de Compra"
-                name="purchasePrice"
-                type="number"
-                value={formState.purchasePrice}
-                onChange={handleInputChange}
-                fullWidth
-                required
-                error={!!formErrors.purchasePrice}
-                helperText={formErrors.purchasePrice || "Ex: 150.00"}
-                placeholder="Ex: 150.00"
-              />
-            </Grid>
-            <Grid size={{ xs: 12, sm: 6 }}>
-              <TextField
-                label="Preço de Venda"
-                name="sellingPrice"
-                type="number"
-                value={formState.sellingPrice}
-                onChange={handleInputChange}
-                fullWidth
-                required
-                error={!!formErrors.sellingPrice}
-                helperText={formErrors.sellingPrice || "Ex: 200.00"}
-                placeholder="Ex: 200.00"
-              />
-            </Grid>
-            <Grid size={{ xs: 12, sm: 6 }}>
-              <TextField
-                label="Quantidade em Stock"
-                name="stockQuantity"
-                type="number"
-                value={formState.stockQuantity}
-                onChange={handleInputChange}
-                fullWidth
-                required
-                error={!!formErrors.stockQuantity}
-                helperText={formErrors.stockQuantity || "Ex: 100"}
-                placeholder="Ex: 100"
-              />
-            </Grid>
-            <Grid size={{ xs: 12, sm: 6 }}>
-              <TextField
-                label="Stock Mínimo"
-                name="minStockQuantity"
-                type="number"
-                value={formState.minStockQuantity}
-                onChange={handleInputChange}
-                fullWidth
-                required
-                error={!!formErrors.minStockQuantity}
-                helperText={formErrors.minStockQuantity || "Ex: 10"}
-                placeholder="Ex: 10"
-              />
-            </Grid>
-            <Grid size={{ xs: 12, sm: 6 }}>
-              <TextField
-                label="Data de Validade"
-                name="expiryDate"
-                type="date"
-                value={formState.expiryDate}
-                onChange={handleInputChange}
-                fullWidth
-                required
-                InputLabelProps={{ shrink: true }}
-                error={!!formErrors.expiryDate}
-                helperText={formErrors.expiryDate || "Ex: 2025-12-31"}
-                placeholder="Ex: 2025-12-31"
-              />
-            </Grid>
-            <Grid size={{ xs: 12, sm: 6 }}>
-              <Box sx={{ display: 'flex', alignItems: 'flex-end', gap: 1 }}>
-                <TextField
-                  label="Código de Barras (Opcional)"
-                  name="barcode"
-                  value={formState.barcode}
-                  onChange={handleInputChange}
-                  fullWidth
-                  error={!!formErrors.barcode}
-                  helperText={formErrors.barcode || "Ex: 7891234567890"}
-                  placeholder="Ex: 7891234567890"
-                />
-                <Tooltip title="Escanear Código de Barras">
-                  <IconButton color="primary" onClick={() => setScannerOpen(true)}>
-                    <QrCodeScannerIcon />
-                  </IconButton>
-                </Tooltip>
-              </Box>
-            </Grid>
-          </Grid>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleCloseModal}>Cancelar</Button>
-          <Button onClick={handleSubmit} variant="contained" disabled={Object.values(formErrors).some(error => !!error)}>Salvar</Button>
-        </DialogActions>
-      </Dialog>
+    <Dialog open={modalOpen} onClose={handleCloseModal} maxWidth="md" fullWidth>
+  <DialogTitle>{editingProduct ? 'Editar Produto' : 'Adicionar Novo Produto'}</DialogTitle>
+  <DialogContent>
+    <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-4">
+      
+      <div>
+        <label className="block text-sm font-medium mb-1">Nome do Produto</label>
+        <input
+          type="text"
+          name="name"
+          value={formState.name}
+          onChange={handleInputChange}
+          placeholder="Ex: Paracetamol 500mg"
+          className={`w-full border rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-indigo-500 ${
+            formErrors.name ? 'border-red-500' : 'border-gray-300'
+          }`}
+        />
+        {formErrors.name && <p className="text-red-500 text-sm mt-1">{formErrors.name}</p>}
+      </div>
+
+      <div>
+        <label className="block text-sm font-medium mb-1">Categoria</label>
+        <input
+          type="text"
+          name="category"
+          value={formState.category}
+          onChange={handleInputChange}
+          placeholder="Ex: Analgésicos"
+          className={`w-full border rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-indigo-500 ${
+            formErrors.category ? 'border-red-500' : 'border-gray-300'
+          }`}
+        />
+        {formErrors.category && <p className="text-red-500 text-sm mt-1">{formErrors.category}</p>}
+      </div>
+
+      <div>
+        <label className="block text-sm font-medium mb-1">Dosagem</label>
+        <input
+          type="text"
+          name="dosage"
+          value={formState.dosage}
+          onChange={handleInputChange}
+          placeholder="Ex: 500mg"
+          className={`w-full border rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-indigo-500 ${
+            formErrors.dosage ? 'border-red-500' : 'border-gray-300'
+          }`}
+        />
+        {formErrors.dosage && <p className="text-red-500 text-sm mt-1">{formErrors.dosage}</p>}
+      </div>
+
+      <div>
+        <label className="block text-sm font-medium mb-1">Fabricante</label>
+        <input
+          type="text"
+          name="manufacturer"
+          value={formState.manufacturer}
+          onChange={handleInputChange}
+          placeholder="Ex: Pfizer"
+          className={`w-full border rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-indigo-500 ${
+            formErrors.manufacturer ? 'border-red-500' : 'border-gray-300'
+          }`}
+        />
+        {formErrors.manufacturer && <p className="text-red-500 text-sm mt-1">{formErrors.manufacturer}</p>}
+      </div>
+
+      <div>
+        <label className="block text-sm font-medium mb-1">Preço de Compra</label>
+        <input
+          type="number"
+          name="purchasePrice"
+          value={formState.purchasePrice}
+          onChange={handleInputChange}
+          placeholder="Ex: 150.00"
+          className={`w-full border rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-indigo-500 ${
+            formErrors.purchasePrice ? 'border-red-500' : 'border-gray-300'
+          }`}
+        />
+        {formErrors.purchasePrice && <p className="text-red-500 text-sm mt-1">{formErrors.purchasePrice}</p>}
+      </div>
+
+      <div>
+        <label className="block text-sm font-medium mb-1">Preço de Venda</label>
+        <input
+          type="number"
+          name="sellingPrice"
+          value={formState.sellingPrice}
+          onChange={handleInputChange}
+          placeholder="Ex: 200.00"
+          className={`w-full border rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-indigo-500 ${
+            formErrors.sellingPrice ? 'border-red-500' : 'border-gray-300'
+          }`}
+        />
+        {formErrors.sellingPrice && <p className="text-red-500 text-sm mt-1">{formErrors.sellingPrice}</p>}
+      </div>
+
+      <div>
+        <label className="block text-sm font-medium mb-1">Quantidade em Stock</label>
+        <input
+          type="number"
+          name="stockQuantity"
+          value={formState.stockQuantity}
+          onChange={handleInputChange}
+          placeholder="Ex: 100"
+          className={`w-full border rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-indigo-500 ${
+            formErrors.stockQuantity ? 'border-red-500' : 'border-gray-300'
+          }`}
+        />
+        {formErrors.stockQuantity && <p className="text-red-500 text-sm mt-1">{formErrors.stockQuantity}</p>}
+      </div>
+
+      <div>
+        <label className="block text-sm font-medium mb-1">Stock Mínimo</label>
+        <input
+          type="number"
+          name="minStockQuantity"
+          value={formState.minStockQuantity}
+          onChange={handleInputChange}
+          placeholder="Ex: 10"
+          className={`w-full border rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-indigo-500 ${
+            formErrors.minStockQuantity ? 'border-red-500' : 'border-gray-300'
+          }`}
+        />
+        {formErrors.minStockQuantity && <p className="text-red-500 text-sm mt-1">{formErrors.minStockQuantity}</p>}
+      </div>
+
+      <div>
+        <label className="block text-sm font-medium mb-1">Data de Validade</label>
+        <input
+          type="date"
+          name="expiryDate"
+          value={formState.expiryDate}
+          onChange={handleInputChange}
+          className={`w-full border rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-indigo-500 ${
+            formErrors.expiryDate ? 'border-red-500' : 'border-gray-300'
+          }`}
+        />
+        {formErrors.expiryDate && <p className="text-red-500 text-sm mt-1">{formErrors.expiryDate}</p>}
+      </div>
+
+      <div className="flex items-end gap-2">
+        <div className="flex-1">
+          <label className="block text-sm font-medium mb-1">Código de Barras (Opcional)</label>
+          <input
+            type="text"
+            name="barcode"
+            value={formState.barcode}
+            onChange={handleInputChange}
+            placeholder="Ex: 7891234567890"
+            className={`w-full border rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-indigo-500 ${
+              formErrors.barcode ? 'border-red-500' : 'border-gray-300'
+            }`}
+          />
+          {formErrors.barcode && <p className="text-red-500 text-sm mt-1">{formErrors.barcode}</p>}
+        </div>
+        <Tooltip title="Escanear Código de Barras">
+          <IconButton color="primary" onClick={() => setScannerOpen(true)}>
+            <QrCodeScannerIcon />
+          </IconButton>
+        </Tooltip>
+      </div>
+
+    </div>
+  </DialogContent>
+  <DialogActions className="justify-end">
+    <button
+      onClick={handleCloseModal}
+      className="px-4 py-2 rounded-md bg-gray-300 hover:bg-gray-400"
+    >
+      Cancelar
+    </button>
+    <Button
+      onClick={handleSubmit}
+              variant="contained" 
+
+      disabled={Object.values(formErrors).some(error => !!error)}
+      className={`px-4 py-2 rounded-md text-white ${
+        Object.values(formErrors).some(error => !!error)
+          ? 'bg-gray-400 cursor-not-allowed'
+          : 'bg-indigo-600 hover:bg-indigo-700'
+      }`}
+    >
+      Salvar
+    </Button>
+  </DialogActions>
+</Dialog>
 
       <BarcodeScanner
         isOpen={scannerOpen}

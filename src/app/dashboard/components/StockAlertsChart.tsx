@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
-import { Box, Typography, CircularProgress, Alert, Paper, useTheme, Grid } from '@mui/material';
+import { Box, Typography, CircularProgress, Alert, Paper, useTheme } from '@mui/material';
 
 interface Product {
   id: string; // Add id to Product interface
@@ -139,136 +139,151 @@ const StockAlertsChart = () => {
   }
 
   return (
-    <Paper elevation={3} sx={{ padding: '20px', width: '100%' }}>
-      <Typography variant="h5" gutterBottom sx={{ textAlign: 'center', marginBottom: '20px' }}>
-        Alertas e Relatórios de Stock
-      </Typography>
-      <Grid container spacing={6} justifyContent="center">
-        <Grid size={{ xs: 12, md: 6 }}>
-          <Typography variant="h6" gutterBottom sx={{ textAlign: 'center' }}>
-            Produtos com Stock Baixo
-          </Typography>
-          {lowStockData.length > 0 ? (
-            <Box sx={{ width: '100%', height: 300 }}>
-              <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={lowStockData} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
-                  <CartesianGrid strokeDasharray="3 3" vertical={false} />
-                  <XAxis dataKey="name" stroke="#666" tick={{ fill: '#666' }} />
-                  <YAxis stroke="#666" tick={{ fill: '#666' }} />
-                  <Tooltip cursor={{fill: 'rgba(0,0,0,0.05)'}} contentStyle={{ backgroundColor: 'rgba(86, 51, 202, 0.9)', border: 'none', color: '#fff' }} itemStyle={{ color: '#fff' }} />
-                  <Legend verticalAlign="top" height={36} />
-                  <Bar dataKey="Quantidade" fill={theme.palette.error.main} radius={[4, 4, 0, 0]} />
-                </BarChart>
-              </ResponsiveContainer>
-            </Box>
-          ) : (
-            <Box sx={{ height: 300, display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-              <Typography variant="body1">Não há produtos com stock baixo.</Typography>
-            </Box>
-          )}
-        </Grid>
+  <div className="bg-white shadow-md rounded-lg p-5 lg:p-10 w-full">
+  <h2 className="text-xl sm:text-2xl font-semibold text-center mb-5">
+    Alertas e Relatórios de Stock
+  </h2>
 
-        {/* Produtos Próximos da Validade */}
-        <Grid size={{ xs: 12, md: 6 }}>
-          <Typography variant="h6" gutterBottom sx={{ textAlign: 'center' }}>
-            Produtos Próximos da Validade
-          </Typography>
-          {nearExpiryData.length > 0 ? (
-            <Box sx={{ width: '100%', height: 300 }}>
-              <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={nearExpiryData} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
-                  <CartesianGrid strokeDasharray="3 3" vertical={false} />
-                  <XAxis dataKey="name" stroke="#666" tick={{ fill: '#666' }} />
-                  <YAxis stroke="#666" tick={{ fill: '#666' }} />
-                  <Tooltip cursor={{fill: 'rgba(0,0,0,0.05)'}} contentStyle={{ backgroundColor: 'rgba(86, 51, 202, 0.9)', border: 'none', color: '#fff' }} itemStyle={{ color: '#fff' }} />
-                  <Legend verticalAlign="top" height={36} />
-                  <Bar dataKey="Dias para Expirar" fill={theme.palette.warning.main} radius={[4, 4, 0, 0]} />
-                </BarChart>
-              </ResponsiveContainer>
-            </Box>
-          ) : (
-            <Box sx={{ height: 300, display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-              <Typography variant="body1">Não há produtos próximos da validade.</Typography>
-            </Box>
-          )}
-        </Grid>
+  <div className="grid grid-cols-1 md:grid-cols-2 gap-6 justify-items-center">
 
-        {/* Produtos Mais Vendidos */}
-        <Grid size={{ xs: 12, md: 6 }}>
-          <Typography variant="h6" gutterBottom sx={{ textAlign: 'center' }}>
-            Produtos Mais Vendidos (Top 5)
-          </Typography>
-          {mostSoldProductsData.length > 0 ? (
-            <Box sx={{ width: '100%', height: 300 }}>
-              <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={mostSoldProductsData} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
-                  <CartesianGrid strokeDasharray="3 3" vertical={false} />
-                  <XAxis dataKey="name" stroke="#666" tick={{ fill: '#666' }} />
-                  <YAxis stroke="#666" tick={{ fill: '#666' }} />
-                  <Tooltip cursor={{fill: 'rgba(0,0,0,0.05)'}} contentStyle={{ backgroundColor: 'rgba(86, 51, 202, 0.9)', border: 'none', color: '#fff' }} itemStyle={{ color: '#fff' }} />
-                  <Legend verticalAlign="top" height={36} />
-                  <Bar dataKey="Quantidade Vendida" fill={theme.palette.success.main} radius={[4, 4, 0, 0]} />
-                </BarChart>
-              </ResponsiveContainer>
-            </Box>
-          ) : (
-            <Box sx={{ height: 300, display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-              <Typography variant="body1">Não há dados de produtos mais vendidos.</Typography>
-            </Box>
-          )}
-        </Grid>
+    {/* Produtos com Stock Baixo */}
+    <div className="flex flex-col items-center w-full">
+      <h3 className="text-lg font-medium text-center mb-2">Produtos com Stock Baixo</h3>
+      {lowStockData.length > 0 ? (
+        <div className="w-full h-72">
+          <ResponsiveContainer width="100%" height="100%">
+            <BarChart data={lowStockData} margin={{ top: 5, right: 0, left: 0, bottom: 5 }}>
+              <CartesianGrid strokeDasharray="3 3" vertical={false} />
+              <XAxis dataKey="name" stroke="#666" tick={{ fill: '#666' }} />
+              <YAxis stroke="#666" tick={{ fill: '#666' }} />
+              <Tooltip
+                cursor={{ fill: 'rgba(0,0,0,0.05)' }}
+                contentStyle={{ backgroundColor: 'rgba(86, 51, 202, 0.9)', border: 'none', color: '#fff' }}
+                itemStyle={{ color: '#fff' }}
+              />
+              <Legend verticalAlign="top" height={36} />
+              <Bar dataKey="Quantidade" fill={theme.palette.error.main} radius={[4, 4, 0, 0]} />
+            </BarChart>
+          </ResponsiveContainer>
+        </div>
+      ) : (
+        <div className="h-72 flex justify-center items-center">
+          <p>Não há produtos com stock baixo.</p>
+        </div>
+      )}
+    </div>
 
-        {/* Movimentações de Stock Recentes */}
-        <Grid size={{ xs: 12, md: 6 }} sx={{ mb: 4 }}>
-          <Typography variant="h6" gutterBottom sx={{ textAlign: 'center' }}>
-            Movimentações de Stock Recentes (Últimos 30 Dias)
-          </Typography>
-          {recentStockMovementsData.length > 0 ? (
-            <Box sx={{ width: '100%', height: 300 }}>
-              <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={recentStockMovementsData} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
-                  <CartesianGrid strokeDasharray="3 3" vertical={false} />
-                  <XAxis dataKey="name" stroke="#666" tick={{ fill: '#666' }} />
-                  <YAxis stroke="#666" tick={{ fill: '#666' }} />
-                  <Tooltip cursor={{fill: 'rgba(0,0,0,0.05)'}} contentStyle={{ backgroundColor: 'rgba(86, 51, 202, 0.9)', border: 'none', color: '#fff' }} itemStyle={{ color: '#fff' }} />
-                  <Legend verticalAlign="top" height={36} />
-                  <Bar dataKey="Mudança Líquida" fill={theme.palette.info.main} radius={[4, 4, 0, 0]} />
-                </BarChart>
-              </ResponsiveContainer>
-            </Box>
-          ) : (
-            <Box sx={{ height: 300, display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-              <Typography variant="body1">Não há movimentações de stock recentes.</Typography>
-            </Box>
-          )}
-        </Grid>
+    {/* Produtos Próximos da Validade */}
+    <div className="flex flex-col items-center w-full">
+      <h3 className="text-lg font-medium text-center mb-2">Produtos Próximos da Validade</h3>
+      {nearExpiryData.length > 0 ? (
+        <div className="w-full h-72">
+          <ResponsiveContainer width="100%" height="100%">
+            <BarChart data={nearExpiryData} margin={{ top: 5, right: 0, left: 0, bottom: 5 }}>
+              <CartesianGrid strokeDasharray="3 3" vertical={false} />
+              <XAxis dataKey="name" stroke="#666" tick={{ fill: '#666' }} />
+              <YAxis stroke="#666" tick={{ fill: '#666' }} />
+              <Tooltip
+                cursor={{ fill: 'rgba(0,0,0,0.05)' }}
+                contentStyle={{ backgroundColor: 'rgba(86, 51, 202, 0.9)', border: 'none', color: '#fff' }}
+                itemStyle={{ color: '#fff' }}
+              />
+              <Legend verticalAlign="top" height={36} />
+              <Bar dataKey="Dias para Expirar" fill={theme.palette.warning.main} radius={[4, 4, 0, 0]} />
+            </BarChart>
+          </ResponsiveContainer>
+        </div>
+      ) : (
+        <div className="h-72 flex justify-center items-center">
+          <p>Não há produtos próximos da validade.</p>
+        </div>
+      )}
+    </div>
 
-         {/* Vendas por Categoria */}
-         <Grid size={{ xs: 12, md: 12 }}>
-          <Typography variant="h6" gutterBottom sx={{ textAlign: 'center' }}>
-            Vendas por Categoria (Top 5)
-          </Typography>
-          {salesByCategoryData.length > 0 ? (
-            <Box sx={{ width: '100%', height: 300 }}>
-              <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={salesByCategoryData} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
-                  <CartesianGrid strokeDasharray="3 3" vertical={false} />
-                  <XAxis dataKey="name" stroke="#666" tick={{ fill: '#666' }} />
-                  <YAxis stroke="#666" tick={{ fill: '#666' }} />
-                  <Tooltip cursor={{fill: 'rgba(0,0,0,0.05)'}} contentStyle={{ backgroundColor: 'rgba(86, 51, 202, 0.9)', border: 'none', color: '#fff' }} itemStyle={{ color: '#fff' }} />
-                  <Legend verticalAlign="top" height={36} />
-                  <Bar dataKey="Total de Vendas" fill={theme.palette.secondary.main} radius={[4, 4, 0, 0]} />
-                </BarChart>
-              </ResponsiveContainer>
-            </Box>
-          ) : (
-            <Box sx={{ height: 300, display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-              <Typography variant="body1">Não há dados de vendas por categoria.</Typography>
-            </Box>
-          )}
-        </Grid>
-      </Grid>
-    </Paper>
+    {/* Produtos Mais Vendidos */}
+    <div className="flex flex-col items-center w-full">
+      <h3 className="text-lg font-medium text-center mb-2">Produtos Mais Vendidos (Top 5)</h3>
+      {mostSoldProductsData.length > 0 ? (
+        <div className="w-full h-72">
+          <ResponsiveContainer width="100%" height="100%">
+            <BarChart data={mostSoldProductsData} margin={{ top: 5, right: 0, left: 0, bottom: 5 }}>
+              <CartesianGrid strokeDasharray="3 3" vertical={false} />
+              <XAxis dataKey="name" stroke="#666" tick={{ fill: '#666' }} />
+              <YAxis stroke="#666" tick={{ fill: '#666' }} />
+              <Tooltip
+                cursor={{ fill: 'rgba(0,0,0,0.05)' }}
+                contentStyle={{ backgroundColor: 'rgba(86, 51, 202, 0.9)', border: 'none', color: '#fff' }}
+                itemStyle={{ color: '#fff' }}
+              />
+              <Legend verticalAlign="top" height={36} />
+              <Bar dataKey="Quantidade Vendida" fill={theme.palette.success.main} radius={[4, 4, 0, 0]} />
+            </BarChart>
+          </ResponsiveContainer>
+        </div>
+      ) : (
+        <div className="h-72 flex justify-center items-center">
+          <p>Não há dados de produtos mais vendidos.</p>
+        </div>
+      )}
+    </div>
+
+    {/* Movimentações de Stock Recentes */}
+    <div className="flex flex-col items-center w-full mb-4">
+      <h3 className="text-lg font-medium text-center mb-2">Movimentações de Stock Recentes (Últimos 30 Dias)</h3>
+      {recentStockMovementsData.length > 0 ? (
+        <div className="w-full h-72">
+          <ResponsiveContainer width="100%" height="100%">
+            <BarChart data={recentStockMovementsData} margin={{ top: 5, right: 0, left: 0, bottom: 5 }}>
+              <CartesianGrid strokeDasharray="3 3" vertical={false} />
+              <XAxis dataKey="name" stroke="#666" tick={{ fill: '#666' }} />
+              <YAxis stroke="#666" tick={{ fill: '#666' }} />
+              <Tooltip
+                cursor={{ fill: 'rgba(0,0,0,0.05)' }}
+                contentStyle={{ backgroundColor: 'rgba(86, 51, 202, 0.9)', border: 'none', color: '#fff' }}
+                itemStyle={{ color: '#fff' }}
+              />
+              <Legend verticalAlign="top" height={36} />
+              <Bar dataKey="Mudança Líquida" fill={theme.palette.info.main} radius={[4, 4, 0, 0]} />
+            </BarChart>
+          </ResponsiveContainer>
+        </div>
+      ) : (
+        <div className="h-72 flex justify-center items-center">
+          <p>Não há movimentações de stock recentes.</p>
+        </div>
+      )}
+    </div>
+
+    {/* Vendas por Categoria */}
+    <div className="flex flex-col items-center w-full">
+      <h3 className="text-lg font-medium text-center mb-2">Vendas por Categoria (Top 5)</h3>
+      {salesByCategoryData.length > 0 ? (
+        <div className="w-full h-72">
+          <ResponsiveContainer width="100%" height="100%">
+            <BarChart data={salesByCategoryData} margin={{ top: 5, right: 0, left: 0, bottom: 5 }}>
+              <CartesianGrid strokeDasharray="3 3" vertical={false} />
+              <XAxis dataKey="name" stroke="#666" tick={{ fill: '#666' }} />
+              <YAxis stroke="#666" tick={{ fill: '#666' }} />
+              <Tooltip
+                cursor={{ fill: 'rgba(0,0,0,0.05)' }}
+                contentStyle={{ backgroundColor: 'rgba(86, 51, 202, 0.9)', border: 'none', color: '#fff' }}
+                itemStyle={{ color: '#fff' }}
+              />
+              <Legend verticalAlign="top" height={36} />
+              <Bar dataKey="Total de Vendas" fill={theme.palette.secondary.main} radius={[4, 4, 0, 0]} />
+            </BarChart>
+          </ResponsiveContainer>
+        </div>
+      ) : (
+        <div className="h-72 flex justify-center items-center">
+          <p>Não há dados de vendas por categoria.</p>
+        </div>
+      )}
+    </div>
+
+  </div>
+</div>
+
   );
 };
 

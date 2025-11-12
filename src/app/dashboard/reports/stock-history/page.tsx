@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useSession } from 'next-auth/react';
 import { 
-  Container, Box, Typography, CircularProgress, Alert, Grid, Paper, TextField, Button, Autocomplete
+  Container, Box, Typography, CircularProgress, Alert, Paper, TextField, Button, Autocomplete
   , Table, TableBody, TableCell, TableContainer, TableHead, TableRow
 } from '@mui/material';
 import { UserRole } from '@prisma/client';
@@ -72,41 +72,79 @@ export default function StockHistoryPage() {
   if (!([UserRole.ADMIN, UserRole.STOCKIST] as UserRole[]).includes(userRole)) return <Container><Alert severity="error" sx={{ mt: 4 }}>Acesso Negado.</Alert></Container>;
 
   return (
-    <Container maxWidth="xl" sx={{ mt: 4, mb: 4 }}>
-      <Typography component="h1" variant="h4" gutterBottom>Histórico de Movimentação de Stock</Typography>
+ <Container
+      component="main"
+      maxWidth="xl"
+      sx={{
+        mt: 4,
+        mb: 4,
+        // em telas grandes, move ligeiramente à esquerda
+        '@media (min-width: 1024px)': { transform: 'translateX(-12%)' },
+      }}
+    >      <Typography component="h1" variant="h4" gutterBottom sx={{ fontSize: { xs: '1.5rem', sm: '2.125rem' } }}>Histórico de Movimentação de Stock</Typography>
       
-      <Paper sx={{ p: 2, mb: 4 }}>
-        <Grid container spacing={2} alignItems="center">
-          <Grid size={{ xs: 12, sm: 3 }}><TextField name="from" label="De" type="date" value={filters.from} onChange={handleFilterChange} fullWidth InputLabelProps={{ shrink: true }} /></Grid>
-          <Grid size={{ xs: 12, sm: 3 }}><TextField name="to" label="Até" type="date" value={filters.to} onChange={handleFilterChange} fullWidth InputLabelProps={{ shrink: true }} /></Grid>
-          <Grid size={{ xs: 12, sm: 4 }}>
-            <Autocomplete
-              options={products}
-              getOptionLabel={(option) => option.name}
-              onChange={handleProductChange}
-              renderInput={(params) => <TextField {...params} label="Filtrar por Produto" />}
-            />
-          </Grid>
-          <Grid size={{ xs: 12, sm: 2 }}><Button variant="contained" onClick={generateReport} disabled={loading} fullWidth>{loading ? 'Gerando...' : 'Gerar'}</Button></Grid>
-        </Grid>
-      </Paper>
+     <Paper className="p-4 mb-6">
+  <div className="flex flex-wrap -mx-2 items-center">
+    <div className="w-full sm:w-3/12 px-2 mb-2 sm:mb-0">
+      <TextField 
+        name="from" 
+        label="De" 
+        type="date" 
+        value={filters.from} 
+        onChange={handleFilterChange} 
+        fullWidth 
+        InputLabelProps={{ shrink: true }} 
+      />
+    </div>
+    <div className="w-full sm:w-3/12 px-2 mb-2 sm:mb-0">
+      <TextField 
+        name="to" 
+        label="Até" 
+        type="date" 
+        value={filters.to} 
+        onChange={handleFilterChange} 
+        fullWidth 
+        InputLabelProps={{ shrink: true }} 
+      />
+    </div>
+    <div className="w-full sm:w-4/12 px-2 mb-2 sm:mb-0">
+      <Autocomplete
+        options={products}
+        getOptionLabel={(option) => option.name}
+        onChange={handleProductChange}
+        renderInput={(params) => <TextField {...params} label="Filtrar por Produto" />}
+      />
+    </div>
+    <div className="w-full sm:w-2/12 px-2">
+      <Button 
+        variant="contained" 
+        onClick={generateReport} 
+        disabled={loading} 
+        fullWidth
+      >
+        {loading ? 'Gerando...' : 'Gerar'}
+      </Button>
+    </div>
+  </div>
+</Paper>
+
 
       {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
       {loading && <Box sx={{ display: 'flex', justifyContent: 'center' }}><CircularProgress /></Box>}
 
       <TableContainer component={Paper}>
         <Table size="small">
-          <TableHead><TableRow><TableCell>Data</TableCell><TableCell>Produto</TableCell><TableCell>Alteração</TableCell><TableCell>Motivo</TableCell><TableCell>Utilizador</TableCell></TableRow></TableHead>
+          <TableHead><TableRow><TableCell sx={{ p: { xs: 1, sm: 2 } }}>Data</TableCell><TableCell sx={{ p: { xs: 1, sm: 2 } }}>Produto</TableCell><TableCell sx={{ p: { xs: 1, sm: 2 } }}>Alteração</TableCell><TableCell sx={{ p: { xs: 1, sm: 2 }, display: { xs: 'none', sm: 'table-cell' } }}>Motivo</TableCell><TableCell sx={{ p: { xs: 1, sm: 2 }, display: { xs: 'none', sm: 'table-cell' } }}>Utilizador</TableCell></TableRow></TableHead>
           <TableBody>
             {movements.map(mov => (
               <TableRow key={mov.id}>
-                <TableCell>{new Date(mov.createdAt).toLocaleString()}</TableCell>
-                <TableCell>{mov.product.name}</TableCell>
-                <TableCell sx={{ color: mov.quantityChange > 0 ? 'green' : 'red', fontWeight: 'bold' }}>
+                <TableCell sx={{ p: { xs: 1, sm: 2 } }}>{new Date(mov.createdAt).toLocaleString()}</TableCell>
+                <TableCell sx={{ p: { xs: 1, sm: 2 } }}>{mov.product.name}</TableCell>
+                <TableCell sx={{ p: { xs: 1, sm: 2 }, color: mov.quantityChange > 0 ? 'green' : 'red', fontWeight: 'bold' }}>
                   {mov.quantityChange > 0 ? `+${mov.quantityChange}` : mov.quantityChange}
                 </TableCell>
-                <TableCell>{mov.reason}</TableCell>
-                <TableCell>{mov.user.name}</TableCell>
+                <TableCell sx={{ p: { xs: 1, sm: 2 }, display: { xs: 'none', sm: 'table-cell' } }}>{mov.reason}</TableCell>
+                <TableCell sx={{ p: { xs: 1, sm: 2 }, display: { xs: 'none', sm: 'table-cell' } }}>{mov.user.name}</TableCell>
               </TableRow>
             ))}
             {movements.length === 0 && !loading && <TableRow><TableCell colSpan={5} align="center">Nenhum movimento encontrado para os filtros selecionados.</TableCell></TableRow>}

@@ -58,8 +58,16 @@ export default function RecoverAccountsPage() {
   if (session?.user?.role !== UserRole.ADMIN) return <Container><Alert severity="error" sx={{ mt: 4 }}>Acesso Negado.</Alert></Container>;
 
   return (
-    <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
-      <Typography component="h1" variant="h4" gutterBottom>
+ <Container
+      component="main"
+      maxWidth="xl"
+      sx={{
+        mt: 4,
+        mb: 4,
+        // em telas grandes, move ligeiramente à esquerda
+        '@media (min-width: 1024px)': { transform: 'translateX(-12%)' },
+      }}
+    >      <Typography component="h1" variant="h4" gutterBottom sx={{ fontSize: { xs: '1.5rem', sm: '2.125rem' } }}>
         Recuperar Contas de Funcionários
       </Typography>
       <Typography variant="body1" color="text.secondary" sx={{ mb: 4 }}>
@@ -73,24 +81,26 @@ export default function RecoverAccountsPage() {
           <Table>
             <TableHead>
               <TableRow>
-                <TableCell>Nome</TableCell>
-                <TableCell>Email</TableCell>
-                <TableCell>Perfil</TableCell>
-                <TableCell align="right">Ações</TableCell>
+                <TableCell sx={{ p: { xs: 1, sm: 2 } }}>Nome</TableCell>
+                <TableCell sx={{ p: { xs: 1, sm: 2 }, display: { xs: 'none', sm: 'table-cell' } }}>Email</TableCell>
+                <TableCell sx={{ p: { xs: 1, sm: 2 }, display: { xs: 'none', sm: 'table-cell' } }}>Perfil</TableCell>
+                <TableCell align="right" sx={{ p: { xs: 1, sm: 2 } }}>Ações</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
               {users.length > 0 ? users.map((user) => (
                 <TableRow key={user.id}>
-                  <TableCell>{user.name}</TableCell>
-                  <TableCell>{user.email}</TableCell>
-                  <TableCell>{user.role}</TableCell>
-                  <TableCell align="right">
-                    <Tooltip title="Reativar Conta">
-                      <IconButton onClick={() => handleReactivate(user)} color="success">
-                        <RestoreFromTrashIcon />
-                      </IconButton>
-                    </Tooltip>
+                  <TableCell sx={{ p: { xs: 1, sm: 2 } }}>{user.name}</TableCell>
+                  <TableCell sx={{ p: { xs: 1, sm: 2 }, display: { xs: 'none', sm: 'table-cell' } }}>{user.email}</TableCell>
+                  <TableCell sx={{ p: { xs: 1, sm: 2 }, display: { xs: 'none', sm: 'table-cell' } }}>{user.role}</TableCell>
+                  <TableCell align="right" sx={{ p: { xs: 1, sm: 2 } }}>
+                    <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 0.5 }}>
+                      <Tooltip title="Reativar Conta">
+                        <IconButton size="small" onClick={() => handleReactivate(user)} color="success">
+                          <RestoreFromTrashIcon fontSize="small" />
+                        </IconButton>
+                      </Tooltip>
+                    </Box>
                   </TableCell>
                 </TableRow>
               )) : (

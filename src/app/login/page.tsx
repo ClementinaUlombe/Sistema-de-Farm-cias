@@ -78,8 +78,8 @@ export default function LoginPage() {
           justifyContent: 'space-between',
           alignItems: 'center',
           width: '100%',
-          maxWidth: 1200,
-          p: 3,
+          maxWidth: { xs: '90%', sm: 800, md: 1200 }, // Adjusted maxWidth
+          p: { xs: 2, md: 3 }, // Adjusted padding
         }}
       >
         {/* Left Side */}
@@ -92,10 +92,10 @@ export default function LoginPage() {
             paddingLeft: { md: 4 },
           }}
         >
-          <Typography variant="h1" component="h1" gutterBottom sx={{ whiteSpace: 'nowrap' }}>
+          <Typography variant="h1" component="h1" gutterBottom sx={{ whiteSpace: 'nowrap', fontSize: { xs: '2.5rem', sm: '3.5rem', md: '4rem' } }}>
             Farmacia da Luz
           </Typography>
-          <Typography variant="h5">
+          <Typography variant="h5" sx={{ fontSize: { xs: '1rem', sm: '1.25rem', md: '1.5rem' } }}>
             Sua saúde é a nossa prioridade. Oferecemos uma ampla gama de produtos e serviços farmacêuticos com excelência e cuidado.
           </Typography>
         </Box>
@@ -104,13 +104,13 @@ export default function LoginPage() {
         <Paper
           elevation={6}
           sx={{
-            p: 4,
+            p: { xs: 3, md: 4 }, // Adjusted padding
             display: 'flex',
             flexDirection: 'column',
             alignItems: 'center',
             backgroundColor: 'rgba(255, 255, 255, 0.9)',
             borderRadius: 2,
-            maxWidth: 400,
+            maxWidth: { xs: '90%', sm: 350, md: 400 }, // Adjusted maxWidth
             width: '100%',
           }}
         >

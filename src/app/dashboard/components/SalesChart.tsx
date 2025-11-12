@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
-import { Box, Typography, CircularProgress, Alert, Paper, Grid, useTheme } from '@mui/material';
+import { Box, Typography, CircularProgress, Alert, Paper,  useTheme } from '@mui/material';
 import AnimatedNumber from './AnimatedNumber';
 
 interface ChartData {
@@ -88,29 +88,45 @@ const SalesChart = () => {
   const totalProfit = data.reduce((acc, item) => acc + item.profit, 0);
 
   return (
-    <Paper elevation={3} sx={{ padding: '20px', width: '100%' }}>
+    <Paper elevation={3} sx={{ padding: { xs: '20px', lg: '10px' }, width: '100%' }}>
       <Typography variant="h5" gutterBottom sx={{ textAlign: 'center', marginBottom: '10px' }}>
         Análise de Vendas e Lucros
       </Typography>
       
-      <Grid container spacing={2} sx={{ marginBottom: '20px', textAlign: 'center' }}>
-        <Grid size={{ xs: 6 }}>
-          <Typography variant="h6" color="textSecondary">Vendas Totais</Typography>
-          <Typography variant="h4" sx={{ color: theme.palette.secondary.main, fontWeight: 'bold' }}>
-            <AnimatedNumber value={totalSales} formatter={formatCurrency} />
-          </Typography>
-        </Grid>
-        <Grid size={{ xs: 6 }}>
-          <Typography variant="h6" color="textSecondary">Lucro Total</Typography>
-          <Typography variant="h4" sx={{ color: theme.palette.primary.main, fontWeight: 'bold' }}>
+      <div className="grid grid-cols-2 gap-4 mb-5 text-center justify-center">
+  {/* Vendas Totais */}
+  <div className="col-span-1">
+    <Typography variant="h6" color="textSecondary">
+      Vendas Totais
+    </Typography>
+    <Typography
+      variant="h4"
+      sx={{
+        color: theme.palette.secondary.main,
+        fontWeight: 'bold',
+        fontSize: { xs: '1rem', sm: '2.125rem' },
+      }}
+      className="font-bold text-gray-800 text-lg sm:text-2xl"
+    >
+      <AnimatedNumber value={totalSales} formatter={formatCurrency} />
+    </Typography>
+  </div>
+
+  {/* Lucro Total */}
+  <div className="col-span-1">
+    <Typography variant="h6" color="textSecondary">
+      Lucro Total
+    </Typography>
+          <Typography variant="h4" sx={{ color: theme.palette.primary.main, fontWeight: 'bold', fontSize: { xs: '1rem', sm: '2.125rem' } }}>
             <AnimatedNumber value={totalProfit} formatter={formatCurrency} />
           </Typography>
-        </Grid>
-      </Grid>
+  </div>
+</div>
+
 
       <Box sx={{ width: '100%', height: 300 }}>
         <ResponsiveContainer width="100%" height="100%">
-          <BarChart data={data} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
+          <BarChart data={data} margin={{ top: 5, right: 0, left: 0, bottom: 5 }}>
             <CartesianGrid strokeDasharray="3 3" vertical={false} />
             <XAxis dataKey="name" stroke="#666" tick={{ fill: '#666' }} />
             <YAxis 

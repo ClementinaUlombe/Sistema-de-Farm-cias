@@ -49,8 +49,16 @@ export default function ActivityLogsPage() {
   if (session?.user?.role !== UserRole.ADMIN) return <Container><Alert severity="error" sx={{ mt: 4 }}>Acesso Negado.</Alert></Container>;
 
   return (
-    <Container maxWidth="xl" sx={{ mt: 4, mb: 4 }}>
-      <Typography component="h1" variant="h4" gutterBottom>
+ <Container
+      component="main"
+      maxWidth="xl"
+      sx={{
+        mt: 4,
+        mb: 4,
+        // em telas grandes, move ligeiramente à esquerda
+        '@media (min-width: 1024px)': { transform: 'translateX(-12%)' },
+      }}
+    >      <Typography component="h1" variant="h4" gutterBottom sx={{ fontSize: { xs: '1.5rem', sm: '2.125rem' } }}>
         Logs de Atividades do Sistema
       </Typography>
 
@@ -64,21 +72,21 @@ export default function ActivityLogsPage() {
             <Table stickyHeader>
               <TableHead>
                 <TableRow>
-                  <TableCell>Data</TableCell>
-                  <TableCell>Utilizador</TableCell>
-                  <TableCell>Ação</TableCell>
-                  <TableCell>Alvo ID</TableCell>
-                  <TableCell>Detalhes</TableCell>
+                  <TableCell sx={{ p: { xs: 1, sm: 2 } }}>Data</TableCell>
+                  <TableCell sx={{ p: { xs: 1, sm: 2 }, display: { xs: 'none', sm: 'table-cell' } }}>Utilizador</TableCell>
+                  <TableCell sx={{ p: { xs: 1, sm: 2 } }}>Ação</TableCell>
+                  <TableCell sx={{ p: { xs: 1, sm: 2 }, display: { xs: 'none', sm: 'table-cell' } }}>Alvo ID</TableCell>
+                  <TableCell sx={{ p: { xs: 1, sm: 2 }, display: { xs: 'none', sm: 'table-cell' } }}>Detalhes</TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
                 {logs.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((log) => (
                   <TableRow hover role="checkbox" tabIndex={-1} key={log.id}>
-                    <TableCell>{new Date(log.createdAt).toLocaleString()}</TableCell>
-                    <TableCell>{log.actorName}</TableCell>
-                    <TableCell>{log.action}</TableCell>
-                    <TableCell sx={{ wordBreak: 'break-all' }}>{log.targetId}</TableCell>
-                    <TableCell sx={{ wordBreak: 'break-all' }}>{log.details ? JSON.stringify(log.details) : 'N/A'}</TableCell>
+                    <TableCell sx={{ p: { xs: 1, sm: 2 } }}>{new Date(log.createdAt).toLocaleString()}</TableCell>
+                    <TableCell sx={{ p: { xs: 1, sm: 2 }, display: { xs: 'none', sm: 'table-cell' } }}>{log.actorName}</TableCell>
+                    <TableCell sx={{ p: { xs: 1, sm: 2 } }}>{log.action}</TableCell>
+                    <TableCell sx={{ p: { xs: 1, sm: 2 }, wordBreak: 'break-all', display: { xs: 'none', sm: 'table-cell' } }}>{log.targetId}</TableCell>
+                    <TableCell sx={{ p: { xs: 1, sm: 2 }, wordBreak: 'break-all', display: { xs: 'none', sm: 'table-cell' } }}>{log.details ? JSON.stringify(log.details) : 'N/A'}</TableCell>
                   </TableRow>
                 ))}
               </TableBody>

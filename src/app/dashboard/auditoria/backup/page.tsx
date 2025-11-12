@@ -56,8 +56,16 @@ export default function BackupPage() {
   if (session?.user?.role !== UserRole.ADMIN) return <Container><Alert severity="error" sx={{ mt: 4 }}>Acesso Negado.</Alert></Container>;
 
   return (
-    <Container maxWidth="md" sx={{ mt: 4, mb: 4 }}>
-      <Typography component="h1" variant="h4" gutterBottom>
+ <Container
+      component="main"
+      maxWidth="xl"
+      sx={{
+        mt: 4,
+        mb: 4,
+        // em telas grandes, move ligeiramente à esquerda
+        '@media (min-width: 1024px)': { transform: 'translateX(-12%)' },
+      }}
+    >      <Typography component="h1" variant="h4" gutterBottom sx={{ fontSize: { xs: '1.5rem', sm: '2.125rem' } }}>
         Backup da Base de Dados
       </Typography>
       <Paper sx={{ p: 3, mb: 4 }}>
@@ -73,7 +81,7 @@ export default function BackupPage() {
         </Button>
       </Paper>
 
-      <Typography component="h2" variant="h5" gutterBottom>
+      <Typography component="h2" variant="h5" gutterBottom sx={{ fontSize: { xs: '1.2rem', sm: '1.5rem' } }}>
         Backups Existentes
       </Typography>
       <Paper sx={{ mt: 2 }}>
@@ -86,6 +94,7 @@ export default function BackupPage() {
                 <ListItem>
                   <ListItemText 
                     primary={backup.name} 
+                    primaryTypographyProps={{ noWrap: true, overflow: 'hidden', textOverflow: 'ellipsis' }}
                     secondary={`Criado em: ${new Date(backup.createdAt).toLocaleString()}`}
                   />
                 </ListItem>

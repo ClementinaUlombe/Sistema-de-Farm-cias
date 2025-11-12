@@ -4,7 +4,7 @@ import { useSession, signOut } from 'next-auth/react';
 import { useRouter, usePathname } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { Box, Typography, Button, CircularProgress, List, ListItem, ListItemButton, ListItemIcon, ListItemText, Collapse } from '@mui/material';
+import { Box, Typography, Button, CircularProgress, List, ListItem, ListItemButton, ListItemIcon, ListItemText, Collapse, AppBar, Toolbar, IconButton, Drawer, useMediaQuery } from '@mui/material';
 import { useTheme } from '@mui/material/styles'; // Import useTheme
 import AddShoppingCartIcon from '@mui/icons-material/AddShoppingCart';
 import InventoryIcon from '@mui/icons-material/Inventory';
@@ -18,8 +18,11 @@ import ExpandMore from '@mui/icons-material/ExpandMore';
 import RestoreIcon from '@mui/icons-material/Restore';
 import ListAltIcon from '@mui/icons-material/ListAlt';
 import BackupIcon from '@mui/icons-material/Backup';
+import MenuIcon from '@mui/icons-material/Menu';
 import { UserRole } from '@prisma/client';
 import ThemeSwitcher from '../components/ThemeSwitcher';
+
+const drawerWidth = 240;
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   const { data: session, status } = useSession();
@@ -28,6 +31,12 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   const [auditoriaOpen, setAuditoriaOpen] = useState(false);
   const theme = useTheme(); // Use theme
   const themeMode = theme.palette.mode; // Get theme mode
+  const [mobileOpen, setMobileOpen] = useState(false); // New state for mobile drawer
+  const isMdUp = useMediaQuery(theme.breakpoints.up('md')); // New media query
+
+  const handleDrawerToggle = () => { // New function to toggle mobile drawer
+    setMobileOpen(!mobileOpen);
+  };
 
   useEffect(() => {
     if (status === 'unauthenticated') {
@@ -53,98 +62,83 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
     const baseTextColor = themeMode === 'dark' ? 'white' : 'black'; // Dynamic base text color
 
-    return (
-      <Box sx={{ display: 'flex', minHeight: '100vh' }}>
-        {/* Sidebar */}
-        <Box
-          sx={{
-            width: 240,
-            flexShrink: 0,
-            bgcolor: '#8bc34a', // Verde alface background
-            borderRight: 1,
-            borderColor: 'divider',
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            py: 4,
-            color: baseTextColor, // Dynamic default text color for the sidebar
-          }}
-        >
-          <Link href="/dashboard" passHref style={{ textDecoration: 'none', color: 'inherit' }}>
-            <Typography component="h1" variant="h6" sx={{ mb: 2, color: baseTextColor }}> {/* Dynamic Dashboard text color */}
-              Dashboard
-            </Typography>
-          </Link>
-          <Typography variant="subtitle1" sx={{ mb: 4, color: baseTextColor }}> {/* Dynamic Olá text color */}
-            Olá, {session.user?.name}!
+    const drawerContent = (
+      <div> {/* Changed from Box to div */}
+        <Link href="/dashboard" passHref style={{ textDecoration: 'none', color: 'inherit' }}>
+          <Typography component="h1" variant="h6" sx={{ mb: 2, color: baseTextColor, textAlign: 'center' }}> {/* Dynamic Dashboard text color */}
+            Dashboard
           </Typography>
-          <List sx={{ width: '100%', maxWidth: 360, bgcolor: 'transparent' }}> {/* Transparent background for List */}
-            {([UserRole.ADMIN, UserRole.ATTENDANT] as UserRole[]).includes(userRole) && (
-              <Link href="/dashboard/sales" passHref>
+        </Link>
+        <Typography variant="subtitle1" sx={{ mb: 4, color: baseTextColor, textAlign: 'center' }}> {/* Dynamic Olá text color */}
+          Olá, {session.user?.name}!
+        </Typography>
+        <List sx={{ width: '100%', maxWidth: 360, bgcolor: 'transparent' }}> {/* Transparent background for List */}
+          {([UserRole.ADMIN, UserRole.ATTENDANT] as UserRole[]).includes(userRole) && (
+            <Link href="/dashboard/sales" passHref>
+              <ListItem disablePadding>
+                <ListItemButton
+                  sx={{
+                    bgcolor: isActive('/dashboard/sales') ? 'black' : 'transparent',
+                    '&:hover': {
+                      bgcolor: isActive('/dashboard/sales') ? 'black' : '#7cb342', // Black if active, darker green if not
+                    },
+                    mb: 2,
+                    color: isActive('/dashboard/sales') ? 'white' : baseTextColor, // Dynamic text color
+                  }}
+                >
+                  <ListItemIcon sx={{ color: isActive('/dashboard/sales') ? 'white' : baseTextColor }}>
+                    <AddShoppingCartIcon />
+                  </ListItemIcon>
+                  <ListItemText primary="Nova Venda" sx={{ color: isActive('/dashboard/sales') ? 'white' : baseTextColor }} />
+                </ListItemButton>
+              </ListItem>
+            </Link>
+          )}
+
+          {([UserRole.ADMIN, UserRole.STOCKIST] as UserRole[]).includes(userRole) && (
+            <>
+              <Link href="/dashboard/products" passHref>
                 <ListItem disablePadding>
                   <ListItemButton
                     sx={{
-                      bgcolor: isActive('/dashboard/sales') ? 'black' : 'transparent',
+                      bgcolor: isActive('/dashboard/products') ? 'black' : 'transparent',
                       '&:hover': {
-                        bgcolor: isActive('/dashboard/sales') ? 'black' : '#7cb342', // Black if active, darker green if not
+                        bgcolor: isActive('/dashboard/products') ? 'black' : '#7cb342',
                       },
                       mb: 2,
-                      color: isActive('/dashboard/sales') ? 'white' : baseTextColor, // Dynamic text color
+                      color: isActive('/dashboard/products') ? 'white' : baseTextColor,
                     }}
                   >
-                    <ListItemIcon sx={{ color: isActive('/dashboard/sales') ? 'white' : baseTextColor }}>
-                      <AddShoppingCartIcon />
+                    <ListItemIcon sx={{ color: isActive('/dashboard/products') ? 'white' : baseTextColor }}>
+                      <InventoryIcon />
                     </ListItemIcon>
-                    <ListItemText primary="Nova Venda" sx={{ color: isActive('/dashboard/sales') ? 'white' : baseTextColor }} />
+                    <ListItemText primary="Gerir Produtos" sx={{ color: isActive('/dashboard/products') ? 'white' : baseTextColor }} />
                   </ListItemButton>
                 </ListItem>
               </Link>
-            )}
-
-            {([UserRole.ADMIN, UserRole.STOCKIST] as UserRole[]).includes(userRole) && (
-              <>
-                <Link href="/dashboard/products" passHref>
-                  <ListItem disablePadding>
-                    <ListItemButton
-                      sx={{
-                        bgcolor: isActive('/dashboard/products') ? 'black' : 'transparent',
-                        '&:hover': {
-                          bgcolor: isActive('/dashboard/products') ? 'black' : '#7cb342',
-                        },
-                        mb: 2,
-                        color: isActive('/dashboard/products') ? 'white' : baseTextColor,
-                      }}
-                    >
-                      <ListItemIcon sx={{ color: isActive('/dashboard/products') ? 'white' : baseTextColor }}>
-                        <InventoryIcon />
-                      </ListItemIcon>
-                      <ListItemText primary="Gerir Produtos" sx={{ color: isActive('/dashboard/products') ? 'white' : baseTextColor }} />
-                    </ListItemButton>
-                  </ListItem>
-                </Link>
-                <Link href="/dashboard/reports/stock-history" passHref>
-                  <ListItem disablePadding>
-                    <ListItemButton
-                      sx={{
-                        bgcolor: isActive('/dashboard/reports/stock-history') ? 'black' : 'transparent',
-                        '&:hover': {
-                          bgcolor: isActive('/dashboard/reports/stock-history') ? 'black' : '#7cb342',
-                        },
-                        mb: 2,
-                        color: isActive('/dashboard/reports/stock-history') ? 'white' : baseTextColor,
-                      }}
-                    >
-                      <ListItemIcon sx={{ color: isActive('/dashboard/reports/stock-history') ? 'white' : baseTextColor }}>
-                        <HistoryIcon />
-                      </ListItemIcon>
-                      <ListItemText primary="Histórico de Stock" sx={{ color: isActive('/dashboard/reports/stock-history') ? 'white' : baseTextColor }} />
-                    </ListItemButton>
-                  </ListItem>
-                </Link>
-              </>
-            )}
+              <Link href="/dashboard/reports/stock-history" passHref>
+                <ListItem disablePadding>
+                  <ListItemButton
+                    sx={{
+                      bgcolor: isActive('/dashboard/reports/stock-history') ? 'black' : 'transparent',
+                      '&:hover': {
+                        bgcolor: isActive('/dashboard/reports/stock-history') ? 'black' : '#7cb342',
+                      },
+                      mb: 2,
+                      color: isActive('/dashboard/reports/stock-history') ? 'white' : baseTextColor,
+                    }}
+                  >
+                    <ListItemIcon sx={{ color: isActive('/dashboard/reports/stock-history') ? 'white' : baseTextColor }}>
+                      <HistoryIcon />
+                    </ListItemIcon>
+                    <ListItemText primary="Histórico de Stock" sx={{ color: isActive('/dashboard/reports/stock-history') ? 'white' : baseTextColor }} />
+                  </ListItemButton>
+                </ListItem>
+              </Link>
+            </>
+          )}
             
-            {([UserRole.ADMIN, UserRole.ATTENDANT] as UserRole[]).includes(userRole) && (
+          {([UserRole.ADMIN, UserRole.ATTENDANT] as UserRole[]).includes(userRole) && (
                 <Link href="/dashboard/my-reports" passHref>
                   <ListItem disablePadding>
                     <ListItemButton
@@ -315,13 +309,81 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
               Sair
             </Button>
           </Box>
+        </div>
+    );
+
+    return (
+      <Box sx={{ display: 'flex', minHeight: '100vh' }}>
+        {/* AppBar for mobile */}
+        {!isMdUp && (
+          <AppBar position="fixed" sx={{ zIndex: (theme) => theme.zIndex.drawer + 1, bgcolor: '#8bc34a' }}>
+            <Toolbar>
+              <IconButton
+                color="inherit"
+                aria-label="open drawer"
+                edge="start"
+                onClick={handleDrawerToggle}
+                sx={{ mr: 2, color: baseTextColor }}
+              >
+                <MenuIcon />
+              </IconButton>
+              <Typography variant="h6" noWrap component="div" sx={{ color: baseTextColor }}>
+                Farmacia da Luz
+              </Typography>
+            </Toolbar>
+          </AppBar>
+        )}
+
+        {/* Sidebar */}
+        <Box
+          component="nav"
+          sx={{ width: isMdUp ? drawerWidth : 0, flexShrink: { sm: 0 } }} // Adjust width based on screen size
+          aria-label="mailbox folders"
+        >
+          {/* Temporary drawer for mobile */}
+          {!isMdUp ? (
+            <Drawer
+              variant="temporary"
+              open={mobileOpen}
+              onClose={handleDrawerToggle}
+              ModalProps={{
+                keepMounted: true, // Better open performance on mobile.
+              }}
+              sx={{
+                '& .MuiDrawer-paper': { boxSizing: 'border-box', width: drawerWidth, bgcolor: '#8bc34a', color: baseTextColor },
+              }}
+            >
+              <Box sx={{ py: 4, color: baseTextColor }}> {/* Wrap drawerContent in a Box */}
+                {drawerContent}
+              </Box>
+            </Drawer>
+          ) : (
+            <Drawer
+              variant="permanent"
+              sx={{
+                '& .MuiDrawer-paper': { boxSizing: 'border-box', width: drawerWidth, bgcolor: '#8bc34a', color: baseTextColor },
+              }}
+              open
+            >
+              <Box sx={{ py: 4, color: baseTextColor }}> {/* Wrap drawerContent in a Box */}
+                {drawerContent}
+              </Box>
+            </Drawer>
+          )}
         </Box>
 
         {/* Main Content */}
-        <Box component="main" sx={{ flexGrow: 1, p: 3, position: 'relative' }}>
-          <Box sx={{ position: 'absolute', top: 16, right: 24 }}>
-            <ThemeSwitcher />
-          </Box>
+        <Box
+          component="main"
+          sx={{
+            flexGrow: 1,
+            p: { xs: 3, lg: 0 }, // Remove padding for large screens
+            width: { sm: `calc(100% - ${isMdUp ? drawerWidth : 0}px)` }, // Adjust width based on drawer
+            ml: { sm: `${isMdUp ? drawerWidth : 0}px` }, // Adjust margin-left based on drawer
+            mt: { xs: !isMdUp ? '64px' : '0px', md: '0px' }, // Add top margin for mobile app bar
+            position: 'relative'
+          }}
+        >
           {children}
         </Box>
       </Box>

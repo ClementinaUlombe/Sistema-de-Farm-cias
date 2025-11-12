@@ -5,7 +5,7 @@ import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { 
-  Container, Box, Typography, CircularProgress, Alert, Grid, Paper,
+  Container, Box, Typography, CircularProgress, Alert, Paper,
   Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Button, Stack
 } from '@mui/material';
 import { UserRole } from '@prisma/client';
@@ -52,14 +52,22 @@ export default function ReportsPage() {
   if (session?.user?.role !== UserRole.ADMIN) return <Container><Alert severity="error" sx={{ mt: 4 }}>Acesso Negado. Apenas Administradores podem ver esta página.</Alert></Container>;
 
   return (
-    <Container maxWidth="xl" sx={{ mt: 4, mb: 4 }}>
-      <Typography component="h1" variant="h4" gutterBottom>Central de Relatórios</Typography>
+ <Container
+      component="main"
+      maxWidth="xl"
+      sx={{
+        mt: 4,
+        mb: 4,
+        // em telas grandes, move ligeiramente à esquerda
+        '@media (min-width: 1024px)': { transform: 'translateX(-12%)' },
+      }}
+    >      <Typography component="h1" variant="h4" gutterBottom sx={{ fontSize: { xs: '1.5rem', sm: '2.125rem' } }}>Central de Relatórios</Typography>
       
       {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
 
       <Paper sx={{ p: 2, mb: 4 }}>
-        <Typography component="h2" variant="h5" gutterBottom>Relatórios Gerais e de Auditoria</Typography>
-        <Stack direction="row" spacing={2}>
+        <Typography component="h2" variant="h5" gutterBottom sx={{ fontSize: { xs: '1.2rem', sm: '1.5rem' } }}>Relatórios Gerais e de Auditoria</Typography>
+        <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2}>
           <Link href="/dashboard/reports/sales" passHref>
             <Button variant="contained">Relatório de Vendas</Button>
           </Link>
@@ -69,45 +77,69 @@ export default function ReportsPage() {
         </Stack>
       </Paper>
 
-      <Typography component="h2" variant="h5" gutterBottom sx={{ mt: 4 }}>Relatórios de Alertas</Typography>
-      <Grid container spacing={4} sx={{ mt: 1 }}>
-        {/* Low Stock Report */}
-        <Grid size={{ xs: 12, md: 6 }}>
-          <TableContainer component={Paper}>
-            <Table>
-              <TableHead><TableRow><TableCell>Produto</TableCell><TableCell align="right">Stock Atual</TableCell><TableCell align="right">Stock Mínimo</TableCell></TableRow></TableHead>
-              <TableBody>
-                {lowStock.length > 0 ? lowStock.map(p => (
-                  <TableRow key={p.id} sx={{ backgroundColor: 'rgba(255, 0, 0, 0.05)' }}>
-                    <TableCell>{p.name}</TableCell>
-                    <TableCell align="right">{p.stockQuantity}</TableCell>
-                    <TableCell align="right">{p.minStockQuantity}</TableCell>
-                  </TableRow>
-                )) : <TableRow><TableCell colSpan={3} align="center">Nenhum produto com stock baixo.</TableCell></TableRow>}
-              </TableBody>
-            </Table>
-          </TableContainer>
-        </Grid>
+      <Typography component="h2" variant="h5" gutterBottom sx={{ mt: 4, fontSize: { xs: '1.2rem', sm: '1.5rem' } }}>Relatórios de Alertas</Typography>
+      <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
 
-        {/* Near Expiry Report */}
-        <Grid size={{ xs: 12, md: 6 }}>
-          <Typography component="h3" variant="h6" gutterBottom>Produtos Próximos da Validade</Typography>
-          <TableContainer component={Paper}>
-            <Table>
-              <TableHead><TableRow><TableCell>Produto</TableCell><TableCell>Data de Validade</TableCell><TableCell align="right">Stock</TableCell></TableRow></TableHead>
-              <TableBody>
-                {nearExpiry.length > 0 ? nearExpiry.map(p => (
-                  <TableRow key={p.id} sx={{ backgroundColor: 'rgba(255, 165, 0, 0.05)' }}>
-                    <TableCell>{p.name}</TableCell>
-                    <TableCell>{new Date(p.expiryDate).toLocaleDateString()}</TableCell>
-                    <TableCell align="right">{p.stockQuantity}</TableCell>
-                  </TableRow>
-                )) : <TableRow><TableCell colSpan={3} align="center">Nenhum produto próximo da validade.</TableCell></TableRow>}
-              </TableBody>
-            </Table>
-          </TableContainer>
-        </Grid>
-      </Grid>
+  {/* Low Stock Report */}
+  <div className="bg-white shadow-md rounded-lg overflow-x-auto">
+    <h3 className="text-lg font-medium p-4 border-b">Produtos com Stock Baixo</h3>
+    <table className="min-w-full divide-y divide-gray-200">
+      <thead className="bg-gray-50">
+        <tr>
+          <th className="px-2 py-2 text-left text-sm font-medium text-gray-700">Produto</th>
+          <th className="px-2 py-2 text-right text-sm font-medium text-gray-700">Stock Atual</th>
+          <th className="px-2 py-2 text-right text-sm font-medium text-gray-700">Stock Mínimo</th>
+        </tr>
+      </thead>
+      <tbody>
+        {lowStock.length > 0 ? (
+          lowStock.map(p => (
+            <tr key={p.id} className="bg-red-50">
+              <td className="px-2 py-2">{p.name}</td>
+              <td className="px-2 py-2 text-right">{p.stockQuantity}</td>
+              <td className="px-2 py-2 text-right">{p.minStockQuantity}</td>
+            </tr>
+          ))
+        ) : (
+          <tr>
+            <td colSpan={3} className="px-2 py-4 text-center text-gray-500">Nenhum produto com stock baixo.</td>
+          </tr>
+        )}
+      </tbody>
+    </table>
+  </div>
+
+  {/* Near Expiry Report */}
+  <div className="bg-white shadow-md rounded-lg overflow-x-auto">
+    <h3 className="text-lg font-medium p-4 border-b">Produtos Próximos da Validade</h3>
+    <table className="min-w-full divide-y divide-gray-200">
+      <thead className="bg-gray-50">
+        <tr>
+          <th className="px-2 py-2 text-left text-sm font-medium text-gray-700">Produto</th>
+          <th className="px-2 py-2 text-left text-sm font-medium text-gray-700">Data de Validade</th>
+          <th className="px-2 py-2 text-right text-sm font-medium text-gray-700">Stock</th>
+        </tr>
+      </thead>
+      <tbody>
+        {nearExpiry.length > 0 ? (
+          nearExpiry.map(p => (
+            <tr key={p.id} className="bg-orange-50">
+              <td className="px-2 py-2">{p.name}</td>
+              <td className="px-2 py-2">{new Date(p.expiryDate).toLocaleDateString()}</td>
+              <td className="px-2 py-2 text-right">{p.stockQuantity}</td>
+            </tr>
+          ))
+        ) : (
+          <tr>
+            <td colSpan={3} className="px-2 py-4 text-center text-gray-500">Nenhum produto próximo da validade.</td>
+          </tr>
+        )}
+      </tbody>
+    </table>
+  </div>
+
+</div>
+
     </Container>
   );
 }
