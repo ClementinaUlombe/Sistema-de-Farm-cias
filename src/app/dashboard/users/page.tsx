@@ -300,7 +300,20 @@ export default function UsersPage() {
       console.log("fetchUsers finished");
       setLoading(false);
     }
-  }, []);
+  }, [setFeedbackModalState]); // Added setFeedbackModalState to dependencies
+
+  useEffect(() => {
+    if (status === 'unauthenticated') {
+      router.push('/login');
+    } else if (status === 'authenticated') {
+      if (session?.user?.role === UserRole.ADMIN) {
+        fetchUsers();
+      } else {
+        setLoading(false);
+        setFeedbackModalState({ open: true, message: 'Acesso Negado. Apenas Administradores podem ver esta página.', severity: 'error' });
+      }
+    }
+  }, [status, session, router, fetchUsers, setFeedbackModalState]);
   
     if (loading || status === 'loading') return <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}><CircularProgress /></Box>;
   
