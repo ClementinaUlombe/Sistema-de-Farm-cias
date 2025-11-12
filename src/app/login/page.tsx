@@ -42,18 +42,27 @@ export default function LoginPage() {
  return (
   <>
     <Box
-      sx={{
-        minHeight: '100vh',
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
-        backgroundImage: 'url(/Farmacianochile.jpg)',
-        backgroundSize: 'cover',
-        backgroundPosition: 'center 20%',
-        backgroundRepeat: 'no-repeat',
-        position: 'relative',
-        overflow: 'hidden',
-      }}
+     sx={{
+  minHeight: '100vh',
+  display: 'flex',
+  justifyContent: 'center',
+  alignItems: 'center',
+  backgroundImage: 'url(/Farmacianochile.jpg)',
+  backgroundSize: 'cover',
+  backgroundPosition: 'center 20%',
+  backgroundRepeat: 'no-repeat',
+  position: 'relative',
+  overflow: 'hidden',
+  // ajustes responsivos
+  '@media (max-width: 768px)': {
+    backgroundPosition: 'center 40%', // desloca o foco vertical em telas pequenas
+  },
+  '@media (max-width: 480px)': {
+    backgroundPosition: 'center 50%', // ainda mais centralizado
+    backgroundSize: 'contain', // garante que a imagem não corte
+  },
+}}
+
     >
       {/* Green Overlay */}
       <Box
@@ -112,9 +121,10 @@ export default function LoginPage() {
             borderRadius: 2,
             maxWidth: { xs: '90%', sm: 350, md: 400 }, // Adjusted maxWidth
             width: '100%',
+            mx: { xs: 'auto' }, // Center Paper horizontally on xs screens
           }}
         >
-          <Typography component="h1" variant="h5">
+          <Typography component="h1" variant="h5" sx={{ color: 'black' }}>
             Login do Sistema
           </Typography>
           <Box component="form" onSubmit={handleSubmit} sx={{ mt: 1, width: '100%' }}>
@@ -129,6 +139,11 @@ export default function LoginPage() {
               autoFocus
               value={email}
               onChange={(e) => setEmail(e.target.value)}
+              sx={{
+                '& .MuiOutlinedInput-notchedOutline': { borderColor: 'green' },
+                '& .MuiInputLabel-root': { color: 'green' },
+                '& .MuiInputBase-input': { color: 'black' },
+              }}
             />
             <TextField
               margin="normal"
@@ -141,6 +156,11 @@ export default function LoginPage() {
               autoComplete="current-password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
+              sx={{
+                '& .MuiOutlinedInput-notchedOutline': { borderColor: 'green' },
+                '& .MuiInputLabel-root': { color: 'green' },
+                '& .MuiInputBase-input': { color: 'black' },
+              }}
             />
             <Button type="submit" fullWidth variant="contained" sx={{ mt: 3, mb: 2, color: 'white' }}>
               Entrar

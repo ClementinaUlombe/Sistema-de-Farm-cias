@@ -139,7 +139,7 @@ const StockAlertsChart = () => {
   }
 
   return (
-  <div className="bg-white shadow-md rounded-lg p-5 lg:p-10 w-full">
+    <Box className="shadow-md rounded-lg p-5 lg:p-10 w-full" sx={{ backgroundColor: theme.palette.background.paper }}>
   <h2 className="text-xl sm:text-2xl font-semibold text-center mb-5">
     Alertas e Relatórios de Stock
   </h2>
@@ -282,9 +282,8 @@ const StockAlertsChart = () => {
     </div>
 
   </div>
-</div>
+  </Box>
 
   );
 };
-
 export default StockAlertsChart;

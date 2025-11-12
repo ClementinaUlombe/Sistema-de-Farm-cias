@@ -71,31 +71,31 @@ return (
     }}
   >
     <div className="lg:max-w-screen-lg lg:mx-auto">
-      <h1 className="text-2xl sm:text-3xl font-bold mb-6">Os Meus Relatórios de Vendas</h1>
+      <h1 className="text-2xl sm:text-3xl font-bold mb-6 dark:text-gray-100">Os Meus Relatórios de Vendas</h1>
 
       {/* Filtros */}
-      <div className="bg-white shadow-md rounded-lg p-5 mb-6 w-full">
+      <Paper elevation={3} className="shadow-md rounded-lg p-5 mb-6 w-full">
         <div className="grid grid-cols-1 sm:grid-cols-12 gap-4 items-center">
           <div className="sm:col-span-5">
-            <label htmlFor="from" className="block text-sm font-medium mb-1">De</label>
+            <label htmlFor="from" className="block text-sm font-medium mb-1 dark:text-gray-100">De</label>
             <input
               type="date"
               id="from"
               name="from"
               value={dates.from}
               onChange={handleDateChange}
-              className="w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              className="w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:bg-gray-700 dark:text-gray-100 dark:border-gray-600"
             />
           </div>
           <div className="sm:col-span-5">
-            <label htmlFor="to" className="block text-sm font-medium mb-1">Até</label>
+            <label htmlFor="to" className="block text-sm font-medium mb-1 dark:text-gray-100">Até</label>
             <input
               type="date"
               id="to"
               name="to"
               value={dates.to}
               onChange={handleDateChange}
-              className="w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              className="w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:bg-gray-700 dark:text-gray-100 dark:border-gray-600"
             />
           </div>
           <div className="w-full sm:w-2/12 px-2">
@@ -111,7 +111,7 @@ return (
             </Button>
           </div>
         </div>
-      </div>
+      </Paper>
 
       {/* Mensagem de erro */}
       {error && <div className="mb-4 p-3 bg-red-100 text-red-700 rounded-md">{error}</div>}
@@ -130,32 +130,31 @@ return (
       {reportData && (
         <>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-6">
-            <div className="bg-white shadow-md rounded-lg p-5 text-center">
-              <h3 className="text-lg font-medium mb-2">Total Vendido</h3>
-              <p className="text-2xl sm:text-3xl font-bold">{reportData.totalSalesValue.toFixed(2)} MT</p>
-            </div>
-            <div className="bg-white shadow-md rounded-lg p-5 text-center">
-              <h3 className="text-lg font-medium mb-2">Nº de Vendas</h3>
-              <p className="text-2xl sm:text-3xl font-bold">{reportData.saleCount}</p>
-            </div>
+            <Paper elevation={3} className="shadow-md rounded-lg p-5 text-center">
+              <h3 className="text-lg font-medium mb-2 dark:text-gray-100">Total Vendido</h3>
+              <p className="text-2xl sm:text-3xl font-bold dark:text-gray-100">{reportData.totalSalesValue.toFixed(2)} MT</p>
+            </Paper>
+            <Paper elevation={3} className="shadow-md rounded-lg p-5 text-center">
+              <h3 className="text-lg font-medium mb-2 dark:text-gray-100">Nº de Vendas</h3>
+              <p className="text-2xl sm:text-3xl font-bold dark:text-gray-100">{reportData.saleCount}</p>
+            </Paper>
           </div>
 
-          <h2 className="text-xl sm:text-2xl font-semibold mb-3">Minhas Vendas Detalhadas</h2>
+          <h2 className="text-xl sm:text-2xl font-semibold mb-3 dark:text-gray-100">Minhas Vendas Detalhadas</h2>
           <TableContainer component={Paper}>
             <Table size="small">
               <TableHead>
                 <TableRow>
-                  <TableCell className="p-1 sm:p-2">Data</TableCell>
-                  <TableCell className="hidden sm:table-cell p-1 sm:p-2">Nº Itens</TableCell>
-                  <TableCell className="hidden sm:table-cell p-1 sm:p-2">Método Pag.</TableCell>
-                  <TableCell className="p-1 sm:p-2">Total</TableCell>
+                  <TableCell className="px-0.5 py-1 sm:p-2 text-xs sm:text-base dark:text-gray-100">Data</TableCell>
+                  <TableCell className="hidden sm:table-cell px-0.5 py-1 sm:p-2 text-xs sm:text-base dark:text-gray-100">Nº Itens</TableCell>
+                  <TableCell className="hidden sm:table-cell px-0.5 py-1 sm:p-2 text-xs sm:text-base dark:text-gray-100">Método Pag.</TableCell>
+                  <TableCell className="px-0.5 py-1 sm:p-2 text-xs sm:text-base dark:text-gray-100">Total</TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
                 {reportData.detailedSales.map(sale => (
                                     <TableRow key={sale.id}>
-                                      <TableCell className="p-1 sm:p-2">{new Date(sale.createdAt).toLocaleString()}</TableCell><TableCell className="hidden sm:table-cell p-1 sm:p-2">{sale.itemCount}</TableCell><TableCell className="hidden sm:table-cell p-1 sm:p-2">{sale.paymentMethod}</TableCell><TableCell className="p-1 sm:p-2">{sale.total.toFixed(2)}</TableCell>
-                                    </TableRow>
+                                      <TableCell className="px-0.5 py-1 sm:p-2 text-xs sm:text-base truncate dark:text-gray-100">{new Date(sale.createdAt).toLocaleString()}</TableCell><TableCell className="hidden sm:table-cell px-0.5 py-1 sm:p-2 text-xs sm:text-base dark:text-gray-100">{sale.itemCount}</TableCell><TableCell className="hidden sm:table-cell px-0.5 py-1 sm:p-2 text-xs sm:text-base dark:text-gray-100">{sale.paymentMethod}</TableCell><TableCell className="px-0.5 py-1 sm:p-2 text-xs sm:text-base dark:text-gray-100">{sale.total.toFixed(2)}</TableCell>                                    </TableRow>
                 ))}
               </TableBody>
             </Table>

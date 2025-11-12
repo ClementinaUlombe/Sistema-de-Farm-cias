@@ -72,6 +72,9 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         <Typography variant="subtitle1" sx={{ mb: 4, color: baseTextColor, textAlign: 'center' }}> {/* Dynamic Olá text color */}
           Olá, {session.user?.name}!
         </Typography>
+        <Box sx={{ display: 'flex', justifyContent: 'center', mb: 2 }}>
+          <ThemeSwitcher />
+        </Box>
         <List sx={{ width: '100%', maxWidth: 360, bgcolor: 'transparent' }}> {/* Transparent background for List */}
           {([UserRole.ADMIN, UserRole.ATTENDANT] as UserRole[]).includes(userRole) && (
             <Link href="/dashboard/sales" passHref>
@@ -293,22 +296,32 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
               </>
             )}
           </List>
-          <Box sx={{ mt: 'auto', width: '80%' }}> {/* Pushes the sign-out button to the bottom */}
-            <Button
-              variant="contained"
-              onClick={() => signOut({ callbackUrl: '/login' })}
-              fullWidth
-              sx={{
-                bgcolor: 'black',
-                color: 'white',
-                '&:hover': {
-                  bgcolor: '#212121',
-                },
-              }}
-            >
-              Sair
-            </Button>
-          </Box>
+         <Box
+  sx={{
+    mt: 'auto',
+    width: { xs: '80%', lg: '100%' }, // 80% em telas pequenas, 100% em grandes
+    display: 'flex',
+    justifyContent: { xs: 'flex-start', lg: 'flex-end' }, // pequena: inicio, grande: direita
+    pl: { xs: '20%', lg: 0 }, // deslocamento em telas pequenas
+  }}
+>
+  <Button
+    variant="contained"
+    onClick={() => signOut({ callbackUrl: '/login' })}
+    sx={{
+      bgcolor: 'black',
+      color: 'white',
+      '&:hover': {
+        bgcolor: '#212121',
+      },
+      width: { xs: '100%', lg: 200 },  // responsivo
+      maxWidth: 300,
+    }}
+  >
+    Sair
+  </Button>
+</Box>
+
         </div>
     );
 

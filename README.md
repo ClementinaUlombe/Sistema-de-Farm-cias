@@ -1,6 +1,6 @@
 # Sistema de Gestão de Farmácia
 
-Este é um sistema web completo para gestão de uma farmácia, desenvolvido com Next.js, Prisma, TypeScript e Material-UI.
+Este é um sistema web completo para gestão de uma farmácia, desenvolvido pela Engenheira Clementina Katchinombelo Ulombe e o Engenheiro Ivo da Silva Pedro usando o Next.js, Prisma, TypeScript e Material-UI.
 
 ---
 
