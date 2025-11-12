@@ -38,7 +38,6 @@ export const authOptions: AuthOptions = {
         if (!isPasswordValid) {
           return null;
         }
-
         return {
           id: user.id,
           email: user.email,

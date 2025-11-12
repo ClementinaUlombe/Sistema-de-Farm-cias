@@ -5,7 +5,7 @@ import { signIn } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import { Box, TextField, Button, Typography, Paper } from '@mui/material';
 import Link from 'next/link';
-import FeedbackModal from '../components/FeedbackModal';
+import FeedbackModal from '../components/FeedbackModal'; // Re-enabled
 import { keyframes } from '@emotion/react';
 
 // Define keyframes for a subtle background animation
@@ -18,12 +18,12 @@ const gradientAnimation = keyframes`
 export default function LoginPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
+  const [error, setError] = useState(''); // Re-enabled
   const router = useRouter();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError('');
+    setError(''); // Re-enabled
 
     const result = await signIn('credentials', {
       redirect: false,
@@ -32,7 +32,8 @@ export default function LoginPage() {
     });
 
     if (result?.error) {
-      setError('A sua conta foi deativada. para voltar a entrar, fale com o Admin.');
+      setError('A sua conta foi deativada. para voltar a entrar, fale com o Admin.'); // Re-enabled
+      console.error('Login error:', result.error); // Log error to console
     } else if (result?.ok) {
       router.push('/dashboard');
     }

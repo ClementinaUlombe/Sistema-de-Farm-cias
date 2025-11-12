@@ -2,7 +2,7 @@
 
 import { ThemeProvider as MUIThemeProvider, createTheme } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
-import React, { useState, useMemo, createContext } from 'react';
+import React, { useState, useMemo, createContext, useEffect } from 'react';
 
 export const ColorModeContext = createContext({ toggleColorMode: () => {} });
 
@@ -12,11 +12,27 @@ interface ThemeProviderProps {
 
 export default function AppThemeProvider({ children }: ThemeProviderProps) {
   const [mode, setMode] = useState<'light' | 'dark'>('light');
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    // Read from local storage or system preference on client-side
+    const storedMode = localStorage.getItem('themeMode') as 'light' | 'dark';
+    if (storedMode) {
+      setMode(storedMode);
+    } else if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+      setMode('dark');
+    }
+    setMounted(true);
+  }, []);
 
   const colorMode = useMemo(
     () => ({
       toggleColorMode: () => {
-        setMode((prevMode) => (prevMode === 'light' ? 'dark' : 'light'));
+        setMode((prevMode) => {
+          const newMode = prevMode === 'light' ? 'dark' : 'light';
+          localStorage.setItem('themeMode', newMode);
+          return newMode;
+        });
       },
     }),
     [],
@@ -85,7 +101,7 @@ export default function AppThemeProvider({ children }: ThemeProviderProps) {
     <ColorModeContext.Provider value={colorMode}>
       <MUIThemeProvider theme={theme}>
         <CssBaseline />
-        {children}
+        {mounted && children}
       </MUIThemeProvider>
     </ColorModeContext.Provider>
   );
