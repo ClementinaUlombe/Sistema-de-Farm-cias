@@ -4,14 +4,16 @@ import { useState, useEffect, useCallback } from 'react';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import { 
-  Container, Box, Typography, Button, CircularProgress, 
+  Container, Typography,  CircularProgress, 
   Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, 
-  Dialog, DialogActions, DialogContent, DialogTitle, TextField, Grid,
+  Dialog, DialogActions, DialogContent, DialogTitle, TextField,
   IconButton, Tooltip, Select, MenuItem, InputLabel, FormControl
 } from '@mui/material';
 import FeedbackModal from '../../components/FeedbackModal';
 import { Edit as EditIcon, Delete as DeleteIcon } from '@mui/icons-material';
 import { UserRole } from '@prisma/client';
+import Grid from '@mui/material/Grid';
+import { Box, Button } from '@mui/material';
 
 interface User {
   id: string;
@@ -156,7 +158,7 @@ export default function UsersPage() {
   
       ['name', 'email', 'role'].forEach(field => {
   
-        const error = validateField(field, formState[field as keyof typeof formState], editingUser);
+        const error = validateField(field, formState[field as keyof typeof formState] || '', editingUser);
   
         if (error) {
   
@@ -170,7 +172,7 @@ export default function UsersPage() {
   
       // Password validation is conditional
   
-      const passwordError = validateField('password', formState.password, editingUser);
+      const passwordError = validateField('password', formState.password || '', editingUser);
   
       if (passwordError) {
   
@@ -382,7 +384,7 @@ export default function UsersPage() {
   
             <Grid container spacing={2} sx={{ mt: 1 }}>
   
-              <Grid item xs={12}>
+              <Grid size={{ xs: 12 }}>
   
                 <TextField
   
@@ -408,11 +410,11 @@ export default function UsersPage() {
   
               </Grid>
   
-              <Grid item xs={12}>
+                            <Grid size={{ xs: 12 }}>
   
-                <TextField
+                              <TextField
   
-                  label="Email"
+                                label="Email"
   
                   name="email"
   
@@ -436,33 +438,20 @@ export default function UsersPage() {
   
               </Grid>
   
-              <Grid item xs={12}>
-  
-                <TextField
-  
-                  label="Senha"
-  
-                  name="password"
-  
-                  type="password"
-  
-                  onChange={handleInputChange}
-  
-                  fullWidth
-  
-                  required={!editingUser}
-  
-                  error={!!formErrors.password}
-  
-                  helperText={formErrors.password || (editingUser ? 'Deixe em branco para não alterar' : 'Ex: MinhaSenhaForte1!')}
-  
-                  placeholder={editingUser ? '' : 'Ex: MinhaSenhaForte1!'}
-  
-                />
-  
-              </Grid>
-  
-              <Grid item xs={12}>
+                            <Grid size={{ xs: 12 }}>
+                              <TextField
+                                label="Senha"
+                                name="password"
+                                type="password"
+                                onChange={handleInputChange}
+                                fullWidth
+                                required={!editingUser}
+                                error={!!formErrors.password}
+                                helperText={formErrors.password || (editingUser ? 'Deixe em branco para não alterar' : 'Ex: MinhaSenhaForte1!')}
+                                placeholder={editingUser ? '' : 'Ex: MinhaSenhaForte1!'}
+                              />
+                            </Grid>  
+              <Grid size={{ xs: 12 }}>
   
                 <FormControl fullWidth required error={!!formErrors.role}>
   
